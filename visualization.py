@@ -89,8 +89,8 @@ print("✓ Figure saved successfully!")
 print("\n生成世界地图热力图... Generating world map heatmap...")
 country_stats = pd.read_csv("CleanedData/country_statistics.csv", encoding="utf-8-sig")
 
-# 读取世界地图GeoJSON Load world map GeoJSON
-world = gpd.read_file('/tmp/geo_data/world-countries.json')
+# 读取世界地图GeoJSON Load world map GeoJSON from local directory
+world = gpd.read_file('CleanedData/geo_data/world-countries.json')
 
 # 国家名称到ISO-3代码的转换 Convert country names to ISO-3 codes
 def get_iso3(country_name):
