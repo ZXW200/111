@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import os
 import geopandas as gpd
 from matplotlib.colors import LinearSegmentedColormap
+from CleanData import COUNTRY_CODE
 
 # 创建输出文件夹 Create output folder
 os.makedirs("CleanedDataPlt", exist_ok=True)
@@ -86,18 +87,6 @@ print("✓ Figure saved successfully!")
 # 创建世界地图热力图 Create world map heatmap
 print("\n生成世界地图热力图... Generating world map heatmap...")
 country_stats = pd.read_csv("CleanedData/country_statistics.csv", encoding="utf-8-sig")
-
-# 使用已有的国家代码映射 Use existing country code mapping
-COUNTRY_CODE = {
-    'BRA': 'Brazil','IND': 'India', 'ARG': 'Argentina','KEN': 'Kenya','TZA': 'Tanzania','ETH': 'Ethiopia','CIV': 'Côte d\'Ivoire',
-    'UGA': 'Uganda','ESP': 'Spain','USA': 'United States','BGD': 'Bangladesh','SDN': 'Sudan','CHN': 'China','BOL': 'Bolivia','COL': 'Colombia',
-    'SEN': 'Senegal','NLD': 'Netherlands','GBR': 'United Kingdom','LAO': 'Laos','CHE': 'Switzerland','PHL': 'Philippines','KHM': 'Cambodia','VNM': 'Vietnam',
-    'MEX': 'Mexico','NPL': 'Nepal','DEU': 'Germany','FRA': 'France','ZWE': 'Zimbabwe','BFA': 'Burkina Faso','MDG': 'Madagascar', 'IDN': 'Indonesia',
-    'ZMB': 'Zambia', 'EGY': 'Egypt', 'GHA': 'Ghana','GAB': 'Gabon', 'CHL': 'Chile', 'MOZ': 'Mozambique', 'THA': 'Thailand','CAN': 'Canada','ECU': 'Ecuador',
-    'TLS': 'Timor-Leste','FJI': 'Fiji','LKA': 'Sri Lanka','GTM': 'Guatemala','BEL': 'Belgium','GNB': 'Guinea-Bissau', 'MWI': 'Malawi','SLB': 'Solomon Islands','RWA': 'Rwanda',
-    'HTI': 'Haiti','NER': 'Niger','PER': 'Peru','VEN': 'Venezuela','LBR': 'Liberia','AUS': 'Australia','COD': 'DR Congo','HND': 'Honduras',
-    'CMR': 'Cameroon','ZAF': 'South Africa','MLI': 'Mali','SLV': 'El Salvador','MRT': 'Mauritania'
-}
 
 # 反转映射：国家名 -> ISO代码 Reverse mapping: country name -> ISO code
 name_to_code = {v: k for k, v in COUNTRY_CODE.items()}
