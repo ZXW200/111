@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-import folium
+import geopandas as gpd
 from CleanData import COUNTRY_CODE
 
 # 创建输出文件夹 Create output folder
@@ -91,95 +91,31 @@ country_stats = pd.read_csv("CleanedData/country_statistics.csv", encoding="utf-
 name_to_code = {v: k for k, v in COUNTRY_CODE.items()}
 country_stats['iso_alpha'] = country_stats['country'].map(name_to_code)
 
-# 创建folium地图 Create folium map
-m = folium.Map(
-    location=[20, 0],
-    zoom_start=2,
-    tiles='CartoDB positron',
-    prefer_canvas=True
+# 读取世界地图 Load world map
+world = gpd.read_file('CleanedData/geo_data/world-countries.json')
+
+# 合并数据 Merge data
+world_merged = world.merge(country_stats, left_on='id', right_on='iso_alpha', how='left')
+
+# 创建图形 Create figure
+fig, ax = plt.subplots(1, 1, figsize=(20, 10))
+
+# 绘制热力图 Plot heatmap
+world_merged.plot(
+    column='count', ax=ax, legend=True, cmap='YlOrRd',
+    edgecolor='black', linewidth=0.3,
+    missing_kwds={'color': 'lightgray'},
+    legend_kwds={'label': 'Number of Clinical Trials', 'shrink': 0.6}
 )
 
-# 添加choropleth层 Add choropleth layer
-choropleth = folium.Choropleth(
-    geo_data='CleanedData/geo_data/world-countries.json',
-    data=country_stats,
-    columns=['iso_alpha', 'count'],
-    key_on='feature.id',
-    fill_color='YlOrRd',
-    fill_opacity=0.8,
-    line_opacity=0.5,
-    legend_name='Number of NTD Clinical Trials',
-    nan_fill_color='#eeeeee',
-    nan_fill_opacity=0.3,
-    highlight=True
-)
-choropleth.add_to(m)
+ax.set_title('World Map: Number of NTD Clinical Trials by Country',
+             fontsize=22, fontweight='bold', pad=20)
+ax.axis('off')
 
-# 添加tooltip显示国家信息 Add tooltips
-choropleth.geojson.add_child(
-    folium.features.GeoJsonTooltip(
-        fields=['name'],
-        aliases=['Country:'],
-        style='background-color: white; color: #333333; font-family: arial; font-size: 12px; padding: 10px;'
-    )
-)
+# 保存PNG Save PNG
+plt.tight_layout()
+plt.savefig('CleanedDataPlt/world_heatmap.png', dpi=300, bbox_inches='tight')
+plt.close()
 
-# 为每个有数据的国家添加详细信息
-import json
-with open('CleanedData/geo_data/world-countries.json', 'r') as f:
-    geo_json = json.load(f)
-
-# 创建国家数据字典
-country_data = dict(zip(country_stats['iso_alpha'], country_stats['count']))
-
-# 更新GeoJSON添加count信息（所有国家都添加，没有数据的设为"No data"）
-for feature in geo_json['features']:
-    country_id = feature.get('id')
-    if country_id in country_data:
-        feature['properties']['trials'] = f"{int(country_data[country_id])} trials"
-    else:
-        feature['properties']['trials'] = 'No data'
-
-# 添加带有详细信息的GeoJson层
-style_function = lambda x: {
-    'fillColor': 'transparent',
-    'color': 'transparent',
-    'weight': 0,
-    'fillOpacity': 0
-}
-
-highlight_function = lambda x: {
-    'weight': 3,
-    'color': '#ff6600',
-    'fillOpacity': 0.7
-}
-
-folium.GeoJson(
-    geo_json,
-    style_function=style_function,
-    highlight_function=highlight_function,
-    tooltip=folium.GeoJsonTooltip(
-        fields=['name', 'trials'],
-        aliases=['Country:', 'Clinical Trials:'],
-        style='background-color: white; color: #333333; font-family: arial; font-size: 14px; padding: 10px;',
-        sticky=False
-    )
-).add_to(m)
-
-# 添加标题
-title_html = '''
-<div style="position: fixed;
-     top: 10px; left: 50px; width: 550px; height: auto;
-     background-color: white; border: 2px solid grey; z-index: 9999;
-     font-size: 16px; font-weight: bold; padding: 15px;
-     box-shadow: 2px 2px 6px rgba(0,0,0,0.3);">
-     <span style="color: #2c3e50;">🌍 World Map: Number of NTD Clinical Trials by Country</span>
-</div>
-'''
-m.get_root().html.add_child(folium.Element(title_html))
-
-# 保存HTML Save HTML
-m.save('CleanedDataPlt/world_heatmap.html')
-print("✓ World heatmap saved as CleanedDataPlt/world_heatmap.html")
-print("  Hover over countries to see trial counts")
+print("✓ World heatmap saved as CleanedDataPlt/world_heatmap.png")
 print("\n所有可视化完成！ All visualizations completed!")
