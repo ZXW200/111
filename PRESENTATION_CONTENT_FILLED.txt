@@ -1,0 +1,364 @@
+===============================================================================
+NTD CLINICAL TRIALS ANALYSIS - PRESENTATION CONTENT (DATA FILLED)
+===============================================================================
+
+准备演讲PPT时，复制这些内容到幻灯片
+
+===============================================================================
+SLIDE 1: Title
+===============================================================================
+
+Investigating Trends in Neglected Tropical Disease (NTD) Clinical Studies
+
+Group 16 - Lancaster University
+WHO ICTRP Data 1999-2023
+
+===============================================================================
+SLIDE 2: Dataset Overview
+===============================================================================
+
+**Data Source:** WHO International Clinical Trials Registry Platform (ICTRP)
+
+**After Cleaning:**
+• 311 valid clinical trials
+• 62 countries
+• 1999-2023 (25 years)
+• 4 main diseases: Chagas, Schistosomiasis, Endemic worms, Visceral leishmaniasis
+
+===============================================================================
+SLIDE 3: Research Questions
+===============================================================================
+
+1. What factors affect results publication?
+2. Can network analysis reveal country partnerships?
+3. What proportion funded by pharma companies?
+4. Are children and pregnant women included?
+5. Which drugs studied for Chagas disease?
+
+===============================================================================
+SLIDE 4-5: RQ 2.2.1 - Publication Factors
+===============================================================================
+
+**FINDING: SEVERE PUBLICATION GAP**
+
+📊 Publication Rate: 4.2% (only 13 out of 311 trials)
+📊 Unpublished: 95.8% (298 trials)
+
+**Method:** Logistic Regression
+• Features: phase, study type, sponsor, income level
+• OneHotEncoder + Logistic Regression pipeline
+
+**Factors INCREASING Publication (+):**
+1. Phase II trials (+0.972) ✅
+2. Industry sponsors (+0.702) ✅
+3. Government sponsors (+0.690) ✅
+4. High-income countries (+0.654) ✅
+5. Lower-middle income (+0.419) ✅
+
+**Factors DECREASING Publication (-):**
+1. Low-income countries (-0.916) ❌
+2. Non-profit sponsors (-0.755) ❌
+3. "Other" sponsors (-0.643) ❌
+4. Phase I trials (-0.621) ❌
+5. Phase IV trials (-0.408) ❌
+
+**Implication:** Publication bias is severe. Industry and high-income countries publish more.
+
+[Include: CleanedDataPlt/coefficients_plot.png]
+
+===============================================================================
+SLIDE 6: RQ 2.2.3 - Pharmaceutical Funding
+===============================================================================
+
+**FINDING: LOW PHARMA INVESTMENT**
+
+📊 Sponsor Distribution:
+• Non-profit: 66.9% (208 trials) 🔵
+• Other: 21.2% (66 trials)
+• Industry: 7.4% (23 trials) ⚠️ VERY LOW
+• Government: 4.5% (14 trials)
+
+**Implication:** NGOs carry the research burden. Pharma severely underinvests in NTDs.
+
+[Include: CleanedDataPlt/sponsor_distribution.png]
+
+===============================================================================
+SLIDE 7: RQ 2.2.3 - Industry vs Disease Burden
+===============================================================================
+
+**Do pharma trials align with high-burden regions?**
+
+📍 High-burden countries: India, Mexico, Tanzania, Bangladesh, Bolivia, Kenya, Egypt, Côte d'Ivoire
+
+📊 Industry Trials Distribution (23 total):
+• High Burden regions: 19 trials (39.6%)
+• Normal regions: 29 trials (60.4%)
+
+**Implication:** 60% of industry trials are NOT in high-burden regions!
+→ Potential misalignment
+
+[Include: CleanedDataPlt/industry_region.png]
+
+===============================================================================
+SLIDE 8: RQ 2.2.2 - Country Collaborations
+===============================================================================
+
+**FINDING: STRONG INTERNATIONAL PARTNERSHIPS**
+
+🌐 Network Overview:
+• Multi-country trials: 43
+• Countries in network: 43
+• Collaborative connections: 163
+
+**Top 5 Hub Countries (by partners):**
+1. 🇦🇷 Argentina - 22 partners, 47 collaborations, Centrality: 0.294
+2. 🇰🇭 Cambodia - 18 partners, 22 collaborations, Centrality: 0.275
+3. 🇧🇷 Brazil - 18 partners, 32 collaborations, Centrality: 0.159
+4. 🇻🇳 Vietnam - 15 partners, 17 collaborations, Centrality: 0.094
+5. 🇪🇹 Ethiopia - 13 partners, 21 collaborations, Centrality: 0.070
+
+**Implication:** Argentina and Cambodia act as major research hubs, bridging different regions.
+
+[Include: network_statistics.csv top 10 as table]
+
+===============================================================================
+SLIDE 9: RQ 2.2.4 - Special Populations
+===============================================================================
+
+**FINDING: LIMITED INCLUSION**
+
+👶 **Children:**
+• No explicit tracking field in dataset
+• Data limitation: must infer from age ranges
+• Estimated ~50% trials may include children
+
+🤰 **Pregnant Women:**
+• Explicitly included: 12 trials (3.8%)
+• Excluded/unclear: 96.2%
+
+**Implication:** Vulnerable populations underrepresented. Evidence gaps for special groups.
+
+===============================================================================
+SLIDE 10: RQ 2.2.5 - Drug Trends (Chagas)
+===============================================================================
+
+**FINDING: BENZNIDAZOLE DOMINATES**
+
+💊 Chagas Disease Analysis:
+• Total Chagas trials: 88
+• Method: Regex extraction from intervention text
+
+**Top 5 Drugs Studied:**
+1. Benznidazole - 21 trials (main treatment)
+2. Placebo - 10 trials
+3. E1224 - 6 trials (experimental)
+4. Nifurtimox - 5 trials
+5. E1224 Placebo - 4 trials
+
+**Implication:** Research heavily focused on Benznidazole. Limited diversity in drug candidates.
+
+===============================================================================
+SLIDE 11: How Results Address Research Goals
+===============================================================================
+
+**Main Goal:** "Clarify evolution of NTD trial activities and trends"
+
+✅ **Temporal Trends:** 25-year coverage (1999-2023)
+✅ **Geographic Distribution:** 62 countries, hub countries identified
+✅ **Funding Structure:** Non-profit dominance (67%), Pharma minimal (7%)
+✅ **Publication Patterns:** Severe gap (4.2%), factors identified
+✅ **Collaboration:** Network analysis reveals partnerships
+
+**KEY DISCOVERIES:**
+1. 🚨 Publication crisis: 96% unpublished
+2. 💰 Funding gap: 7% pharma investment
+3. 👥 Representation gap: Special populations excluded
+
+===============================================================================
+SLIDE 12: Data Limitations
+===============================================================================
+
+**Challenges We Faced:**
+
+1. **Severe Publication Bias**
+   • Only 13 published trials
+   • Limited analysis power
+
+2. **Data Completeness**
+   • 4 outliers removed
+   • Missing values in fields
+   • No explicit child participant field
+
+3. **Classification Accuracy**
+   • Keyword-based sponsor classification
+   • May miss edge cases
+
+4. **Temporal Imbalance**
+   • Trial distribution varies by year
+
+===============================================================================
+SLIDE 13: Methodological Limitations
+===============================================================================
+
+**Analytical Challenges:**
+
+1. **Logistic Regression**
+   ⚠️ Small published sample (n=13)
+   ⚠️ Severe class imbalance (4% vs 96%)
+   → May affect reliability
+
+2. **Network Analysis**
+   • Country-level only
+   • Doesn't capture institutions
+   • Edge weights simplistic
+
+3. **Drug Extraction**
+   • Regex-based: may miss variations
+   • Chagas only (not all diseases)
+
+**Mitigation:**
+✅ Stratified sampling
+✅ Transparent documentation
+✅ Robust cleaning pipeline
+
+===============================================================================
+SLIDE 14: Recommendations for Improvement
+===============================================================================
+
+**Data Collection:**
+1. Standardize special population fields
+2. Mandate result publication
+3. Expand to post-2023 trials
+
+**Methodological:**
+1. Handle class imbalance (SMOTE)
+2. Try ensemble methods (Random Forest)
+3. Institution-level network analysis
+4. NLP for drug extraction
+
+**Policy Implications:**
+1. Mandate publication (address 96% gap)
+2. Incentivize pharma investment
+3. Target high-burden regions
+4. Design inclusive trials
+
+===============================================================================
+SLIDE 15: Strengths of Our Analysis
+===============================================================================
+
+✅ **Comprehensive Cleaning**
+• Robust outlier detection
+• Automated classification
+• Income level mapping
+
+✅ **Multi-Method Approach**
+• Statistics + ML + Network + Text Mining
+
+✅ **Reproducible Pipeline**
+• 5 modular scripts
+• Complete documentation
+• Clear execution order
+
+✅ **Transparent**
+• All limitations acknowledged
+• CODE_DOCUMENTATION.txt provided
+
+✅ **Practical Insights**
+• Actionable recommendations
+• Policy implications
+
+===============================================================================
+SLIDE 16: Key Takeaways (Summary)
+===============================================================================
+
+**3 CRITICAL FINDINGS:**
+
+1. 🚨 **PUBLICATION CRISIS**
+   → 95.8% of trials don't publish results
+   → Evidence base severely limited
+
+2. 💰 **FUNDING GAP**
+   → Pharma: 7.4%, Non-profits: 67%
+   → NGOs carry the burden
+
+3. 👥 **REPRESENTATION GAP**
+   → Pregnant women: 3.8%
+   → Children: unclear/underrepresented
+
+**WHAT THIS MEANS:**
+NTD research needs structural reform - better incentives, mandates, and standards.
+
+===============================================================================
+SLIDE 17: Thank You
+===============================================================================
+
+**Questions?**
+
+**Project Materials:**
+• Code: 5 Python scripts
+• Documentation: CODE_DOCUMENTATION.txt
+• Data: 12 CSV files, 3 visualizations
+
+Group 16 - Lancaster University
+
+===============================================================================
+SPEAKER NOTES
+===============================================================================
+
+**Opening (Slide 1-3):**
+"Good afternoon. I'm presenting Group 16's analysis of NTD clinical trials. We analyzed 311 trials from WHO's registry spanning 25 years. Our research addresses 5 key questions about publication, funding, collaboration, special populations, and drug trends."
+
+**Results Section (Slides 4-10):**
+"Our first major finding is alarming: only 4.2% of trials publish results. That's 13 out of 311. Our logistic regression shows industry sponsors and high-income countries are more likely to publish, while non-profits and low-income countries struggle with publication."
+
+"Regarding funding, we found pharmaceutical companies fund only 7.4% of NTD trials. Non-profits carry 67% of the burden. Moreover, 60% of industry trials are NOT in high-burden regions, suggesting misalignment."
+
+"Our network analysis reveals strong international collaboration. Argentina emerges as the top hub with 22 partner countries, followed by Cambodia and Brazil. These countries bridge different research communities."
+
+"For special populations, only 3.8% of trials explicitly include pregnant women. Children's inclusion is unclear due to data limitations."
+
+"Finally, for Chagas disease, Benznidazole dominates research with 21 trials, but there's limited diversity in drug candidates."
+
+**Limitations (Slides 12-13):**
+"We acknowledge several limitations. Our analysis is constrained by the severe publication bias and small published sample. The logistic regression has low statistical power due to class imbalance. However, we mitigated these through transparent documentation and robust methods."
+
+**Recommendations (Slide 14):**
+"We recommend policy makers mandate result publication, incentivize pharma investment, and prioritize high-burden regions. Methodologically, future work should employ advanced techniques like SMOTE and ensemble methods."
+
+**Closing (Slides 15-17):**
+"In summary, our analysis reveals three critical gaps: publication transparency, pharma investment, and special population inclusion. These findings call for structural reform in NTD research. Thank you, and I'm happy to take questions."
+
+===============================================================================
+TIMING (for 10-15 minute presentation):
+===============================================================================
+
+• Intro (Slides 1-3): 2 minutes
+• Results (Slides 4-10): 6 minutes
+• Goals (Slide 11): 1 minute
+• Limitations (Slides 12-13): 2 minutes
+• Recommendations (Slide 14): 1.5 minutes
+• Strengths & Summary (Slides 15-16): 1.5 minutes
+• Closing (Slide 17): 1 minute
+
+**Total: 15 minutes**
+
+===============================================================================
+ANTICIPATED QUESTIONS & ANSWERS
+===============================================================================
+
+Q: "Why is the publication rate so low?"
+A: "Clinical trial publication is a known problem globally, but NTDs are particularly affected due to limited funding and resources. Our analysis suggests structural factors like sponsor type and country income level play a role."
+
+Q: "How accurate is your sponsor classification?"
+A: "We used keyword matching validated against known sponsors. While effective for most cases, edge cases may be misclassified. This is acknowledged in our limitations and documented transparently."
+
+Q: "Why only Chagas for drug analysis?"
+A: "Time constraints limited our scope. Chagas had sufficient trial volume (88 trials) for meaningful trend analysis. Future work could expand to all 4 diseases."
+
+Q: "Can you trust results from only 13 published trials?"
+A: "The small published sample IS the finding - it reveals the publication crisis. While statistical power is limited, the coefficient directions still provide valuable insights into publication patterns."
+
+Q: "What about statistical significance?"
+A: "Given the class imbalance (4% vs 96%), we focus on coefficient magnitude and direction rather than p-values. We acknowledge this limitation explicitly."
+
+===============================================================================
