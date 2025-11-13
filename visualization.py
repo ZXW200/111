@@ -96,12 +96,13 @@ name_to_code = {v: k for k, v in COUNTRY_CODE.items()}
 country_stats['iso_alpha'] = country_stats['country'].map(name_to_code)
 
 # 读取地理数据 Read geographic data from Natural Earth
-# Source: Natural Earth 1:110m Cultural Vectors
+# Source: Natural Earth 1:110m Cultural Vectors - Admin 0 Countries
+# Official repository: https://github.com/nvkelso/natural-earth-vector
 # Downloaded from: https://www.naturalearthdata.com/downloads/110m-cultural-vectors/
-world = gpd.read_file('CleanedData/geo_data/world-countries.json')
+world = gpd.read_file('CleanedData/geo_data/world_admin0.geojson')
 
-# 合并数据 Merge data
-world = world.merge(country_stats, left_on='id', right_on='iso_alpha', how='left')
+# 合并数据 Merge data (使用 ISO_A3 三位国家代码)
+world = world.merge(country_stats, left_on='ISO_A3', right_on='iso_alpha', how='left')
 
 # 绘制地图 Plot map
 fig, ax = plt.subplots(1, 1, figsize=(20, 10))

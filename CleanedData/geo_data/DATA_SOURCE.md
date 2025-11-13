@@ -1,13 +1,15 @@
 # Geographic Data Source 地理数据来源
 
 ## File 文件
-`world-countries.json`
+`world_admin0.geojson`
 
 ## Source 来源
 **Natural Earth**
 - Website 网站: https://www.naturalearthdata.com/
+- Official GitHub Repository 官方GitHub仓库: https://github.com/nvkelso/natural-earth-vector
 - Data Product 数据产品: Natural Earth 1:110m Cultural Vectors - Admin 0 Countries
 - Download Page 下载页面: https://www.naturalearthdata.com/downloads/110m-cultural-vectors/
+- Direct Download 直接下载: https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson
 
 ## Description 描述
 This GeoJSON file contains simplified country boundaries for world map visualization. The data is derived from Natural Earth's 1:110 million scale cultural vectors dataset.
