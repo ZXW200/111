@@ -1,0 +1,303 @@
+===============================================================================
+NTD CLINICAL TRIALS ANALYSIS - 3-MINUTE VIDEO SCRIPT
+===============================================================================
+
+⏱️ TOTAL TIME: 180 seconds (3 minutes)
+📝 READ THIS SCRIPT WHILE RECORDING
+
+===============================================================================
+SECTION 1: INTRODUCTION (0:00 - 0:25) - 25 seconds
+===============================================================================
+
+🎬 SCREEN: Show terminal with file listing
+💻 ACTION: Type and run: ls -lh *.py
+
+📢 SAY THIS (SLOWLY AND CLEARLY):
+
+"Hello, this is Group 16's NTD clinical trials analysis project.
+We analyzed 315 trials from WHO ICTRP, spanning 1999 to 2023.
+Our pipeline consists of five Python scripts, each addressing
+a specific research question. The CODE DOCUMENTATION file
+provides detailed explanations of each script's functionality."
+
+💻 ACTION WHILE SPEAKING:
+- Show: ls -lh *.py
+- Show: ls CODE_DOCUMENTATION.txt README_CODE.md
+- Scroll briefly through CODE_DOCUMENTATION.txt (first 30 lines)
+
+⏱️ CHECK: Should be at 25 seconds mark
+
+===============================================================================
+SECTION 2: DATA CLEANING (0:25 - 1:05) - 40 seconds
+===============================================================================
+
+🎬 SCREEN: Open CleanData.py in text editor
+
+📢 SAY THIS:
+
+"Step one is data cleaning. CleanData dot py processes the raw data.
+It performs several key operations: First, it classifies sponsors
+into four categories using keyword matching. Let me show you the code."
+
+💻 ACTION: Scroll to lines 26-46 (classify_categories function)
+
+📢 CONTINUE:
+
+"Second, it maps countries to World Bank income levels. Third, it
+validates age ranges and removes outliers. After cleaning, we have
+311 valid trials. Let me run this script."
+
+💻 ACTION SEQUENCE:
+1. Show terminal
+2. Type: python3 CleanData.py
+3. WAIT for output (should take 3-5 seconds)
+4. Point to key statistics on screen:
+   - "raw data: 315"
+   - "deleted in total 4"
+   - "Sponsor Category Classification"
+
+📢 SAY WHILE OUTPUT SHOWS:
+
+"As you can see, the script processed 315 records, removed 4 outliers,
+and classified sponsors. Non-profit organizations fund 67% of trials.
+Let's check the generated files."
+
+💻 ACTION: Type: ls CleanedData/
+
+📢 SAY:
+
+"Six cleaned datasets are now ready for analysis."
+
+⏱️ CHECK: Should be at 1:05 mark
+
+===============================================================================
+SECTION 3: LOGISTIC REGRESSION (1:05 - 1:45) - 40 seconds
+===============================================================================
+
+🎬 SCREEN: Open DataFit.py
+
+📢 SAY THIS:
+
+"To answer research question 2.2.1 - what factors affect whether
+results are published - we use logistic regression. Our model
+uses four features: phase, study type, sponsor category, and
+country income level."
+
+💻 ACTION: Scroll to lines 14-16 (feature selection)
+
+📢 CONTINUE:
+
+"The target variable is whether results were posted. Only 4% of
+trials published results. We use scikit-learn's pipeline with
+one-hot encoding."
+
+💻 ACTION: Scroll to lines 24-29 (Pipeline code)
+
+📢 CONTINUE:
+
+"Let me run this model."
+
+💻 ACTION SEQUENCE:
+1. Type: python3 DataFit.py
+2. WAIT for completion (2-3 seconds)
+3. Type: ls CleanedDataPlt/coefficients_plot.png
+4. Open the PNG file in image viewer
+
+📢 SAY WHILE SHOWING CHART:
+
+"This visualization shows coefficients by category. Positive
+coefficients in green indicate higher publication probability.
+For example, industry sponsors have different patterns than
+non-profits."
+
+⏱️ CHECK: Should be at 1:45 mark
+
+===============================================================================
+SECTION 4: NETWORK ANALYSIS (1:45 - 2:15) - 30 seconds
+===============================================================================
+
+🎬 SCREEN: Open Network.py
+
+📢 SAY THIS:
+
+"For research question 2.2.2, we analyze international collaboration.
+Network dot py builds a graph where countries are nodes. When a trial
+involves multiple countries, we create weighted edges."
+
+💻 ACTION: Scroll to lines 36-44 (edge creation logic)
+
+📢 CONTINUE:
+
+"We calculate betweenness centrality to identify hub countries -
+those that connect different research communities. Let's run it."
+
+💻 ACTION SEQUENCE:
+1. Type: python3 Network.py
+2. WAIT for output
+3. Point to statistics:
+   - "multi-country trials"
+   - "countries in the network"
+   - "collaborative connections"
+
+📢 SAY:
+
+"The output shows collaboration statistics. Let's view the results."
+
+💻 ACTION:
+Type: head -10 CleanedData/network_statistics.csv
+
+📢 SAY:
+
+"This ranks countries by their number of partners and centrality scores."
+
+⏱️ CHECK: Should be at 2:15 mark
+
+===============================================================================
+SECTION 5: ADDITIONAL ANALYSES (2:15 - 2:45) - 30 seconds
+===============================================================================
+
+🎬 SCREEN: Show ExtractDrug.py
+
+📢 SAY THIS:
+
+"ExtractDrug dot py addresses research question 2.2.5 about drug trends.
+It focuses on Chagas disease and uses regular expressions to extract
+drug names from intervention descriptions."
+
+💻 ACTION: Scroll to line 50 (regex pattern)
+
+📢 CONTINUE:
+
+"The pattern 'Drug colon' captures medication names. Let me run this."
+
+💻 ACTION:
+Type: python3 ExtractDrug.py
+
+📢 SAY:
+
+"Next, visualization dot py creates publication-ready charts comparing
+sponsor categories and regional distribution."
+
+💻 ACTION:
+Type: python3 visualization.py
+
+📢 CONTINUE:
+
+"This generates pie charts showing that pharmaceutical companies conduct
+only 7% of trials. Let me show you the output."
+
+💻 ACTION:
+Open: CleanedDataPlt/sponsor_distribution.png
+
+📢 SAY BRIEFLY:
+
+"Here we compare all trials versus published trials by sponsor type."
+
+⏱️ CHECK: Should be at 2:45 mark
+
+===============================================================================
+SECTION 6: CONCLUSION (2:45 - 3:00) - 15 seconds
+===============================================================================
+
+🎬 SCREEN: Show output directories
+
+💻 ACTION SEQUENCE:
+1. Type: ls CleanedData/*.csv | wc -l
+2. Type: ls CleanedDataPlt/*.png
+
+📢 SAY THIS:
+
+"Our complete pipeline produces twelve CSV datasets and three
+visualizations, addressing all five research questions. The code
+is well-documented, reproducible, and fully executable. All outputs
+match the results presented in our report. Thank you."
+
+💻 ACTION: Show README_CODE.md final section briefly
+
+⏱️ FINAL CHECK: Should be at exactly 3:00 or slightly under
+
+===============================================================================
+🎬 STOP RECORDING
+===============================================================================
+
+===============================================================================
+POST-RECORDING CHECKLIST
+===============================================================================
+
+□ Video length ≤ 3:00 minutes
+□ Audio is clear throughout
+□ Code is visible (font size 16+)
+□ All scripts were executed successfully
+□ Output files were shown
+□ No personal information visible
+□ File saved as MP4 format
+□ File size < 100MB (if submission has limit)
+
+===============================================================================
+TIPS FOR SUCCESSFUL RECORDING
+===============================================================================
+
+1. PRACTICE FIRST
+   - Read through script 2-3 times
+   - Do a practice recording
+   - Time yourself (aim for 2:50 to leave buffer)
+
+2. SPEAKING TIPS
+   - Speak slowly and clearly
+   - Pause briefly between sentences
+   - Don't rush even if running over time
+
+3. IF YOU MAKE A MISTAKE
+   - DON'T STOP! Keep going
+   - You can edit the video later
+   - Or simply re-record (it only takes 3 minutes)
+
+4. TECHNICAL TIPS
+   - Close all other applications
+   - Disable notifications
+   - Use a quiet room
+   - Test audio before recording
+   - Have water nearby (don't want dry mouth)
+
+5. TERMINAL SETTINGS
+   - Font: 16pt or larger
+   - Color scheme: High contrast (dark background recommended)
+   - Clear command history: type 'clear' before starting
+   - Set up commands in advance in a text file to copy-paste
+
+===============================================================================
+ALTERNATIVE: SIMPLIFIED VERSION (IF STRUGGLING WITH TIME)
+===============================================================================
+
+If 3 minutes feels too rushed, focus on these key points:
+
+1. Introduction (20s)
+   - What the project is
+   - 5 scripts, 5 research questions
+
+2. Data Cleaning (40s)
+   - Show CleanData.py sponsor classification
+   - Run it
+   - Show outputs
+
+3. ONE analysis in depth (60s)
+   - Choose DataFit.py (logistic regression)
+   - Explain features and target
+   - Run it
+   - Show visualization
+   - Interpret results
+
+4. Quick mention of others (30s)
+   - "Network.py analyzes collaborations"
+   - "ExtractDrug.py studies medications"
+   - "visualization.py creates charts"
+   - Show the output files
+
+5. Conclusion (10s)
+   - Complete pipeline
+   - Reproducible
+   - Thank you
+
+===============================================================================
+GOOD LUCK! 🎬
+===============================================================================

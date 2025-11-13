@@ -1,0 +1,155 @@
+===============================================================================
+简化版视频脚本（2分钟版本 - 推荐！）
+===============================================================================
+
+如果3分钟版本太复杂，用这个简化版。只展示最重要的内容。
+
+===============================================================================
+⏱️ 0:00 - 0:20 | 介绍项目 (20秒)
+===============================================================================
+
+【镜头】显示文件列表
+【操作】ls -lh *.py
+
+【台词】
+"Hello. This is our NTD clinical trials analysis.
+We have five Python scripts analyzing 315 WHO trials from 1999 to 2023.
+Each script addresses one research question.
+CODE DOCUMENTATION explains all details."
+
+【操作】ls CODE_DOCUMENTATION.txt
+
+===============================================================================
+⏱️ 0:20 - 1:00 | 数据清理演示 (40秒)
+===============================================================================
+
+【台词】
+"Step one: Data cleaning.
+CleanData.py classifies sponsors into categories,
+maps country income levels,
+and removes outliers.
+Let me run it."
+
+【操作】python3 CleanData.py
+
+【台词】（指着输出）
+"We processed 315 records, removed 4 outliers.
+Non-profit organizations fund 67% of trials.
+Only 4% published results.
+Six cleaned datasets are generated."
+
+【操作】ls CleanedData/
+
+===============================================================================
+⏱️ 1:00 - 1:40 | 主要分析：逻辑回归 (40秒)
+===============================================================================
+
+【台词】
+"The main analysis uses logistic regression
+to identify factors affecting publication.
+We test four features: phase, study type, sponsor, and income level.
+Let me run the model."
+
+【操作】python3 DataFit.py
+
+【台词】
+"The output shows coefficient rankings.
+This visualization displays them by category."
+
+【操作】打开 CleanedDataPlt/coefficients_plot.png
+
+【台词】（指着图）
+"Green bars show positive effects on publication.
+Red bars show negative effects.
+Industry sponsors behave differently than non-profits."
+
+===============================================================================
+⏱️ 1:40 - 2:00 | 其他分析快速展示 (20秒)
+===============================================================================
+
+【台词】
+"Network.py analyzes country collaborations using graph theory.
+ExtractDrug.py studies medication trends for Chagas disease.
+Visualization.py creates these charts."
+
+【操作】
+python3 Network.py
+python3 ExtractDrug.py
+python3 visualization.py
+
+【台词】（最后5秒）
+"Our pipeline produces 12 datasets and 3 visualizations.
+All code is documented and reproducible.
+Thank you."
+
+【操作】ls CleanedData/ CleanedDataPlt/
+
+===============================================================================
+🎬 停止录制 - 完成！
+===============================================================================
+
+⏱️ 总时长：2分钟
+
+这个版本：
+✅ 更简单
+✅ 更容易控制时间
+✅ 重点突出
+✅ 不会超时
+
+如果还有时间剩余，可以：
+- 多解释一下数据清理的细节
+- 展示更多可视化结果
+- 打开某个CSV文件看几行数据
+
+===============================================================================
+超简单录制步骤（给完全不会录视频的人）
+===============================================================================
+
+1️⃣ 准备工作（5分钟）
+   - 打开终端，字体调大
+   - 打开这个脚本文档在另一个屏幕/窗口
+   - 删除旧数据：rm -rf CleanedData/ CleanedDataPlt/
+
+2️⃣ 使用Zoom录制（最简单）
+   - 打开Zoom
+   - 点击"新会议"
+   - 点击"共享屏幕"，选择整个屏幕
+   - 点击底部"录制"按钮（或按Alt+R）
+   - 看着脚本开始说话和操作
+
+3️⃣ 录制过程
+   - 读脚本上的台词（慢慢读）
+   - 做脚本上的操作
+   - 不要停顿太久
+   - 如果说错了继续说，别停
+
+4️⃣ 结束录制
+   - 说完"Thank you"后点击"停止录制"
+   - Zoom会自动转换视频
+   - 在"文档/Zoom/日期"文件夹找到MP4文件
+
+5️⃣ 检查视频
+   - 播放看看
+   - 确认音频清晰
+   - 确认代码可见
+   - 确认时长≤3分钟
+
+6️⃣ 如果不满意
+   - 删除视频
+   - 重新录一次（只要2分钟！）
+   - 录2-3次找最好的
+
+===============================================================================
+终极简化版（1分30秒 - 应急用）
+===============================================================================
+
+如果实在困难，最简化版本：
+
+【30秒】介绍 + 运行CleanData.py
+【40秒】运行DataFit.py + 展示结果图
+【20秒】运行其他3个脚本
+【总结】"All code executable. Thank you."
+
+关键是：**让评审老师看到代码真的能运行并产生结果**
+
+===============================================================================
