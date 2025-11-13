@@ -1,0 +1,302 @@
+===============================================================================
+NTD CLINICAL TRIALS ANALYSIS - 3-MINUTE VIDEO SCRIPT (CORRECT VERSION)
+===============================================================================
+
+⚠️ 重点：解释代码HOW（如何实现），不只是展示结果
+
+视频要展示：
+✅ 打开代码文件，指着代码讲解
+✅ 解释关键函数/算法的实现逻辑
+✅ 说明为什么这样设计
+✅ 运行代码验证实现正确
+
+❌ 不要只是：运行脚本 → 看输出 → 完成
+
+===============================================================================
+⏱️ SECTION 1: INTRODUCTION (0:00 - 0:25) - 25 seconds
+===============================================================================
+
+🎬 SCREEN: Show project structure in file explorer or terminal
+
+📢 SAY:
+
+"Hello, this is Group 16's analysis of NTD clinical trials.
+We analyze 315 trials from WHO ICTRP spanning 1999 to 2023.
+Our implementation consists of five Python scripts.
+I will explain the key implementation details of each component."
+
+💻 ACTION:
+- ls -lh *.py
+- Briefly show CODE_DOCUMENTATION.txt
+
+⏱️ CHECK: 0:25
+
+===============================================================================
+⏱️ SECTION 2: DATA COLLECTION & CLEANING (0:25 - 1:10) - 45 seconds
+===============================================================================
+
+🎬 SCREEN: Open CleanData.py in text editor (VS Code, Sublime, or nano)
+
+📢 SAY:
+
+"Let me explain our data cleaning implementation.
+First, we classify sponsors into categories using keyword matching."
+
+💻 ACTION: Scroll to lines 26-46 (classify_categories function)
+
+📢 CONTINUE (while pointing at code):
+
+"This function takes a sponsor name as input.
+We define keyword lists for each category: government, industry,
+and non-profit. For example, line 33 checks if keywords like
+'MINISTRY' or 'GOVERNMENT' appear in the sponsor name.
+Line 40 uses a Python list comprehension with 'any' to check
+if ANY government keyword is found. If yes, we return 'Government'.
+The same logic applies to industry and non-profit categories."
+
+💻 ACTION: Scroll to lines 49-56 (map_income function)
+
+📢 CONTINUE:
+
+"Next, we map countries to World Bank income levels.
+Line 52 uses regex to split country codes by delimiters.
+Lines 53-55 iterate through our income mapping dictionary
+to find the matching income level. This handles cases where
+one trial involves multiple countries."
+
+💻 ACTION: Scroll to lines 94-101 (outlier removal)
+
+📢 CONTINUE:
+
+"For data quality, we remove outliers. Line 97 filters sample
+sizes to be between 0 and 1 million. Line 98 calculates how
+many records were removed. This prevents extreme values from
+skewing our analysis."
+
+⏱️ CHECK: 1:10
+
+===============================================================================
+⏱️ SECTION 3: MODELING - LOGISTIC REGRESSION (1:10 - 1:50) - 40 seconds
+===============================================================================
+
+🎬 SCREEN: Open DataFit.py
+
+📢 SAY:
+
+"Now let me explain our logistic regression implementation
+for predicting publication likelihood."
+
+💻 ACTION: Scroll to lines 14-16 (feature selection)
+
+📢 CONTINUE (pointing at code):
+
+"Line 14 defines our feature list: phase, study type,
+sponsor category, and income level. These are all categorical
+variables. Line 16 converts the results_posted column to
+binary integers - published equals one, unpublished equals zero."
+
+💻 ACTION: Scroll to lines 24-29 (Pipeline)
+
+📢 CONTINUE:
+
+"Here's the key implementation: we use sklearn's Pipeline.
+Line 25 creates a ColumnTransformer with OneHotEncoder.
+This automatically converts categorical features into
+numerical dummy variables. Line 28 adds LogisticRegression
+with max iterations of 2000. The Pipeline ensures encoding
+happens before model training. Line 29 fits the entire pipeline
+to our training data."
+
+💻 ACTION: Run the script to show it works
+Type: python3 DataFit.py
+
+📢 CONTINUE (while it runs):
+
+"The model extracts coefficients showing which factors
+increase or decrease publication probability."
+
+💻 ACTION: Show the generated plot briefly
+
+⏱️ CHECK: 1:50
+
+===============================================================================
+⏱️ SECTION 4: NETWORK ANALYSIS (1:50 - 2:20) - 30 seconds
+===============================================================================
+
+🎬 SCREEN: Open Network.py
+
+📢 SAY:
+
+"For research question 2, we implement network analysis
+to reveal country collaborations."
+
+💻 ACTION: Scroll to lines 9-14 (initialization)
+
+📢 CONTINUE:
+
+"Line 9 creates an undirected graph using NetworkX.
+We iterate through each trial. If a trial involves multiple
+countries, we create edges between them."
+
+💻 ACTION: Scroll to lines 36-44 (edge creation logic)
+
+📢 CONTINUE (pointing):
+
+"Here's the core algorithm: Line 37 creates a nested loop -
+for each pair of countries in a trial, line 41 checks if
+an edge already exists. If yes, line 42 increments the weight.
+If no, line 44 creates a new edge with weight one.
+This builds a weighted collaboration network."
+
+💻 ACTION: Scroll to lines 59-70 (centrality calculation)
+
+📢 CONTINUE:
+
+"Line 60 calculates weighted degree by summing edge weights
+for each country. Line 70 computes betweenness centrality,
+identifying countries that bridge different research communities."
+
+⏱️ CHECK: 2:20
+
+===============================================================================
+⏱️ SECTION 5: DATA EXTRACTION (2:20 - 2:45) - 25 seconds
+===============================================================================
+
+🎬 SCREEN: Open ExtractDrug.py
+
+📢 SAY:
+
+"For drug trend analysis, we implement regex-based extraction."
+
+💻 ACTION: Scroll to line 50 (regex pattern)
+
+📢 CONTINUE (pointing at the line):
+
+"Line 50 is the key implementation: we use Python's re.findall
+with the pattern 'Drug colon' followed by a capture group.
+The pattern matches 'Drug:' then captures everything until
+a semicolon or newline. The IGNORECASE flag handles variations
+in capitalization. This extracts drug names from free-text
+intervention descriptions."
+
+💻 ACTION: Scroll to lines 82-83 (aggregation)
+
+📢 CONTINUE:
+
+"Line 82 uses pandas groupby to aggregate drugs by year,
+creating our temporal trend dataset. The size function
+counts occurrences, and reset_index reshapes the data."
+
+⏱️ CHECK: 2:45
+
+===============================================================================
+⏱️ SECTION 6: CONCLUSION (2:45 - 3:00) - 15 seconds
+===============================================================================
+
+🎬 SCREEN: Show terminal with all output files
+
+📢 SAY:
+
+"In summary, our implementation uses keyword-based classification,
+scikit-learn pipelines for modeling, NetworkX for graph analysis,
+and regex for data extraction. All code is modular, documented,
+and produces reproducible results. Thank you."
+
+💻 ACTION:
+- ls CleanedData/ (show outputs)
+- ls CleanedDataPlt/ (show visualizations)
+
+⏱️ FINAL: Exactly 3:00
+
+===============================================================================
+🎬 STOP RECORDING
+===============================================================================
+
+===============================================================================
+KEY DIFFERENCES FROM PREVIOUS SCRIPT
+===============================================================================
+
+BEFORE (WRONG):
+❌ Run CleanData.py → show output → move on
+❌ Focus on WHAT the code does
+❌ Just demonstrate execution
+
+NOW (CORRECT):
+✅ Open CleanData.py → explain HOW keyword matching works → show code
+✅ Focus on implementation details
+✅ Explain algorithms and data structures
+✅ Point at specific code lines
+✅ Explain WHY we chose this approach
+
+===============================================================================
+WHAT TO EMPHASIZE WHEN EXPLAINING CODE
+===============================================================================
+
+For DATA CLEANING:
+- HOW keyword matching classifies sponsors (line 40: any() function)
+- HOW regex splits country codes (line 52: re.split)
+- HOW outlier filtering works (line 97: boolean indexing)
+
+For MODELING:
+- HOW Pipeline chains encoding and regression
+- HOW OneHotEncoder converts categorical to numerical
+- WHY we use stratified train-test split
+
+For NETWORK ANALYSIS:
+- HOW nested loops create edges between country pairs
+- HOW edge weights accumulate (increment existing vs create new)
+- HOW betweenness centrality identifies hub countries
+
+For DATA EXTRACTION:
+- HOW regex pattern captures drug names
+- WHY we use capture groups
+- HOW groupby aggregates temporal trends
+
+===============================================================================
+RECORDING TIPS FOR CODE EXPLANATION
+===============================================================================
+
+1. USE YOUR MOUSE/CURSOR
+   - Point at the exact line you're discussing
+   - Highlight the code segment (drag to select)
+   - This helps viewers follow along
+
+2. ZOOM IN
+   - Make code font LARGE (20-24pt)
+   - Viewers need to READ the code
+
+3. SPEAK SLOWLY
+   - Pronounce technical terms clearly
+   - Pause between sentences
+   - Give viewers time to read the code
+
+4. EXPLAIN LIKE A CODE REVIEW
+   - "This line does X"
+   - "We use Y algorithm because Z"
+   - "The input is A, output is B"
+
+5. DON'T JUST READ CODE
+   - ❌ "Line 40 says any k in sponsor_upper..."
+   - ✅ "Line 40 uses Python's any function to check if ANY
+        of our government keywords appear in the sponsor name"
+
+===============================================================================
+SIMPLIFIED 2-MINUTE VERSION (IF TIME IS TIGHT)
+===============================================================================
+
+If you need to cut time, focus on these TWO implementations:
+
+1. DATA CLEANING (60 seconds)
+   - Sponsor classification algorithm (keyword matching)
+   - Income level mapping (dictionary lookup)
+   - Show the functions, explain the logic
+
+2. LOGISTIC REGRESSION (60 seconds)
+   - Pipeline implementation
+   - OneHotEncoder explanation
+   - Run it, show coefficients
+
+This covers "data preprocessing" and "modeling" which are
+the two most important sections.
+
+===============================================================================
