@@ -84,6 +84,10 @@ plt.close()
 print("✓ Figure saved successfully!")
 
 # 创建世界地图热力图 Create world map heatmap
+# Geographic data source 地理数据来源:
+# Natural Earth - Free vector and raster map data
+# https://www.naturalearthdata.com/
+# Citation 引用: Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com.
 print("\n生成世界地图热力图... Generating world map heatmap...")
 country_stats = pd.read_csv("CleanedData/country_statistics.csv", encoding="utf-8-sig")
 
@@ -91,7 +95,9 @@ country_stats = pd.read_csv("CleanedData/country_statistics.csv", encoding="utf-
 name_to_code = {v: k for k, v in COUNTRY_CODE.items()}
 country_stats['iso_alpha'] = country_stats['country'].map(name_to_code)
 
-# 读取地理数据 Read geographic data
+# 读取地理数据 Read geographic data from Natural Earth
+# Source: Natural Earth 1:110m Cultural Vectors
+# Downloaded from: https://www.naturalearthdata.com/downloads/110m-cultural-vectors/
 world = gpd.read_file('CleanedData/geo_data/world-countries.json')
 
 # 合并数据 Merge data
@@ -107,8 +113,14 @@ ax.set_title('World Map: Number of NTD Clinical Trials by Country',
              fontsize=16, fontweight='bold', pad=20)
 ax.axis('off')
 
+# 添加数据来源标注 Add data source annotation
+ax.text(0.02, 0.02, 'Map data: Natural Earth (naturalearthdata.com)',
+        transform=ax.transAxes, fontsize=8, verticalalignment='bottom',
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.7))
+
 # 保存JPG Save JPG
 plt.savefig('CleanedDataPlt/world_heatmap.jpg', dpi=300, bbox_inches='tight')
 plt.close()
 print("✓ World heatmap saved as CleanedDataPlt/world_heatmap.jpg")
+print("✓ Data source: Natural Earth (https://www.naturalearthdata.com/)")
 print("\n所有可视化完成！ All visualizations completed!")
