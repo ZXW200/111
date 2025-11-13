@@ -1,8 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-import geopandas as gpd
-from matplotlib.colors import LinearSegmentedColormap
+import folium
 from CleanData import COUNTRY_CODE
 
 # 创建输出文件夹 Create output folder
@@ -92,31 +91,50 @@ country_stats = pd.read_csv("CleanedData/country_statistics.csv", encoding="utf-
 name_to_code = {v: k for k, v in COUNTRY_CODE.items()}
 country_stats['iso_alpha'] = country_stats['country'].map(name_to_code)
 
-# 读取世界地图 Load world map
-world = gpd.read_file('CleanedData/geo_data/world-countries.json')
-
-# 合并数据 Merge data
-world_merged = world.merge(country_stats, left_on='id', right_on='iso_alpha', how='left')
-
-# 创建图形 Create figure
-fig, ax = plt.subplots(1, 1, figsize=(20, 10))
-
-# 绘制热力图 Plot heatmap
-world_merged.plot(
-    column='count', ax=ax, legend=True, cmap='YlOrRd',
-    edgecolor='#333333', linewidth=0.3,
-    missing_kwds={'color': '#e8e8e8'},
-    legend_kwds={'label': 'Number of Clinical Trials', 'shrink': 0.6}
+# 创建folium地图 Create folium map
+m = folium.Map(
+    location=[20, 0],  # 地图中心 Map center
+    zoom_start=2,
+    tiles='OpenStreetMap',
+    attr='Map data © OpenStreetMap contributors'
 )
 
-ax.set_title('World Map: Number of NTD Clinical Trials by Country',
-             fontsize=22, fontweight='bold', pad=20)
-ax.axis('off')
+# 添加choropleth层 Add choropleth layer
+folium.Choropleth(
+    geo_data='CleanedData/geo_data/world-countries.json',
+    data=country_stats,
+    columns=['iso_alpha', 'count'],
+    key_on='feature.id',
+    fill_color='YlOrRd',
+    fill_opacity=0.7,
+    line_opacity=0.3,
+    legend_name='Number of NTD Clinical Trials',
+    nan_fill_color='lightgray',
+    nan_fill_opacity=0.4
+).add_to(m)
 
-# 保存PNG Save PNG
-plt.tight_layout()
-plt.savefig('CleanedDataPlt/world_heatmap.png', dpi=300, bbox_inches='tight')
-plt.close()
+# 添加标题 Add title
+title_html = '''
+<div style="position: fixed;
+     top: 10px; left: 50px; width: 600px; height: 50px;
+     background-color: white; border:2px solid grey; z-index:9999;
+     font-size:18px; font-weight: bold; padding: 10px">
+     World Map: Number of NTD Clinical Trials by Country
+</div>
+'''
+m.get_root().html.add_child(folium.Element(title_html))
 
-print("✓ World heatmap saved as CleanedDataPlt/world_heatmap.png")
+# 添加交互提示 Add tooltips
+for idx, row in country_stats.iterrows():
+    if pd.notna(row['iso_alpha']):
+        # 简单的标记信息
+        folium.Marker(
+            location=[0, 0],  # 占位，实际不显示
+            tooltip=f"{row['country']}: {int(row['count'])} trials",
+            icon=folium.Icon(icon='info-sign')
+        )
+
+# 保存HTML Save HTML
+m.save('CleanedDataPlt/world_heatmap.html')
+print("✓ World heatmap saved as CleanedDataPlt/world_heatmap.html")
 print("\n所有可视化完成！ All visualizations completed!")
