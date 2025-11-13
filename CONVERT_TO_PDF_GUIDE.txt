@@ -1,0 +1,33 @@
+===============================================================================
+使用浏览器将HTML转换为PDF - 详细步骤
+===============================================================================
+
+方法：使用浏览器的"打印"功能
+
+步骤1：打开HTML文件
+-------------------
+cd /home/user/111
+firefox presentation.html
+# 或
+google-chrome presentation.html
+
+步骤2：调整为单页模式（可选）
+-------------------
+# 按F12打开开发者工具
+# 在Console中输入并回车：
+document.querySelectorAll('.slide').forEach(s => s.style.display = 'block');
+document.querySelectorAll('.slide').forEach(s => s.style.pageBreakAfter = 'always');
+
+步骤3：打印为PDF
+-------------------
+1. 按 Ctrl+P (Windows/Linux) 或 Cmd+P (Mac)
+2. 目标/Destination: 选择"保存为PDF"或"Save as PDF"
+3. 布局/Layout: 选择"横向/Landscape"
+4. 页面: 全部
+5. 边距: 无/None
+6. 点击"保存"
+7. 文件名输入: NTD_Presentation.pdf
+
+完成！您现在有了PDF版本！
+
+===============================================================================
