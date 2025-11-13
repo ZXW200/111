@@ -93,48 +93,93 @@ country_stats['iso_alpha'] = country_stats['country'].map(name_to_code)
 
 # 创建folium地图 Create folium map
 m = folium.Map(
-    location=[20, 0],  # 地图中心 Map center
+    location=[20, 0],
     zoom_start=2,
-    tiles='OpenStreetMap',
-    attr='Map data © OpenStreetMap contributors'
+    tiles='CartoDB positron',
+    prefer_canvas=True
 )
 
 # 添加choropleth层 Add choropleth layer
-folium.Choropleth(
+choropleth = folium.Choropleth(
     geo_data='CleanedData/geo_data/world-countries.json',
     data=country_stats,
     columns=['iso_alpha', 'count'],
     key_on='feature.id',
     fill_color='YlOrRd',
-    fill_opacity=0.7,
-    line_opacity=0.3,
+    fill_opacity=0.8,
+    line_opacity=0.5,
     legend_name='Number of NTD Clinical Trials',
-    nan_fill_color='lightgray',
-    nan_fill_opacity=0.4
+    nan_fill_color='#eeeeee',
+    nan_fill_opacity=0.3,
+    highlight=True
+)
+choropleth.add_to(m)
+
+# 添加tooltip显示国家信息 Add tooltips
+choropleth.geojson.add_child(
+    folium.features.GeoJsonTooltip(
+        fields=['name'],
+        aliases=['Country:'],
+        style='background-color: white; color: #333333; font-family: arial; font-size: 12px; padding: 10px;'
+    )
+)
+
+# 为每个有数据的国家添加详细信息
+import json
+with open('CleanedData/geo_data/world-countries.json', 'r') as f:
+    geo_json = json.load(f)
+
+# 创建国家数据字典
+country_data = dict(zip(country_stats['iso_alpha'], country_stats['count']))
+
+# 更新GeoJSON添加count信息（所有国家都添加，没有数据的设为"No data"）
+for feature in geo_json['features']:
+    country_id = feature.get('id')
+    if country_id in country_data:
+        feature['properties']['trials'] = f"{int(country_data[country_id])} trials"
+    else:
+        feature['properties']['trials'] = 'No data'
+
+# 添加带有详细信息的GeoJson层
+style_function = lambda x: {
+    'fillColor': 'transparent',
+    'color': 'transparent',
+    'weight': 0,
+    'fillOpacity': 0
+}
+
+highlight_function = lambda x: {
+    'weight': 3,
+    'color': '#ff6600',
+    'fillOpacity': 0.7
+}
+
+folium.GeoJson(
+    geo_json,
+    style_function=style_function,
+    highlight_function=highlight_function,
+    tooltip=folium.GeoJsonTooltip(
+        fields=['name', 'trials'],
+        aliases=['Country:', 'Clinical Trials:'],
+        style='background-color: white; color: #333333; font-family: arial; font-size: 14px; padding: 10px;',
+        sticky=False
+    )
 ).add_to(m)
 
-# 添加标题 Add title
+# 添加标题
 title_html = '''
 <div style="position: fixed;
-     top: 10px; left: 50px; width: 600px; height: 50px;
-     background-color: white; border:2px solid grey; z-index:9999;
-     font-size:18px; font-weight: bold; padding: 10px">
-     World Map: Number of NTD Clinical Trials by Country
+     top: 10px; left: 50px; width: 550px; height: auto;
+     background-color: white; border: 2px solid grey; z-index: 9999;
+     font-size: 16px; font-weight: bold; padding: 15px;
+     box-shadow: 2px 2px 6px rgba(0,0,0,0.3);">
+     <span style="color: #2c3e50;">🌍 World Map: Number of NTD Clinical Trials by Country</span>
 </div>
 '''
 m.get_root().html.add_child(folium.Element(title_html))
 
-# 添加交互提示 Add tooltips
-for idx, row in country_stats.iterrows():
-    if pd.notna(row['iso_alpha']):
-        # 简单的标记信息
-        folium.Marker(
-            location=[0, 0],  # 占位，实际不显示
-            tooltip=f"{row['country']}: {int(row['count'])} trials",
-            icon=folium.Icon(icon='info-sign')
-        )
-
 # 保存HTML Save HTML
 m.save('CleanedDataPlt/world_heatmap.html')
 print("✓ World heatmap saved as CleanedDataPlt/world_heatmap.html")
+print("  Hover over countries to see trial counts")
 print("\n所有可视化完成！ All visualizations completed!")
