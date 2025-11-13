@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import plotly.express as px
 
 # 创建输出文件夹 Create output folder
 os.makedirs("CleanedDataPlt", exist_ok=True)
@@ -80,3 +81,73 @@ ax.set_title('Industry Trials by Region', fontsize=14, fontweight='bold')
 plt.savefig('CleanedDataPlt/industry_region.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("✓ Figure saved successfully!")
+
+# 创建世界地图热力图 Create world map heatmap
+print("\n生成世界地图热力图... Generating world map heatmap...")
+country_stats = pd.read_csv("CleanedData/country_statistics.csv", encoding="utf-8-sig")
+
+# 国家名称映射（ISO标准）Country name mapping (ISO standard)
+country_mapping = {
+    'United States': 'United States of America',
+    'United Kingdom': 'United Kingdom',
+    'DR Congo': 'Democratic Republic of the Congo',
+    'Côte d\'Ivoire': 'Ivory Coast',
+    'Timor-Leste': 'East Timor',
+    'Bolivia': 'Bolivia',
+    'Venezuela': 'Venezuela',
+    'Tanzania': 'United Republic of Tanzania',
+    'Laos': 'Lao PDR'
+}
+
+# 应用映射 Apply mapping
+country_stats['country_mapped'] = country_stats['country'].replace(country_mapping)
+
+# 创建热力图 Create heatmap
+fig = px.choropleth(
+    country_stats,
+    locations='country_mapped',
+    locationmode='country names',
+    color='count',
+    hover_name='country',
+    hover_data={'country_mapped': False, 'count': True},
+    color_continuous_scale='YlOrRd',
+    labels={'count': 'Number of Experiments'},
+    title='World Map: Number of NTD Clinical Trials by Country'
+)
+
+fig.update_layout(
+    geo=dict(
+        showframe=False,
+        showcoastlines=True,
+        projection_type='natural earth'
+    ),
+    title={
+        'text': 'World Map: Number of NTD Clinical Trials by Country',
+        'x': 0.5,
+        'xanchor': 'center',
+        'font': {'size': 18, 'family': 'Arial', 'color': '#2c3e50'}
+    },
+    width=1400,
+    height=700,
+    coloraxis_colorbar=dict(
+        title="Trial Count",
+        thicknessmode="pixels",
+        thickness=15,
+        lenmode="pixels",
+        len=300
+    )
+)
+
+# 保存为HTML文件 Save as HTML file
+fig.write_html('CleanedDataPlt/world_heatmap.html')
+print("✓ World heatmap saved as CleanedDataPlt/world_heatmap.html")
+
+# 尝试保存为静态图片（需要Chrome） Try to save as static image (requires Chrome)
+try:
+    fig.write_image('CleanedDataPlt/world_heatmap.png', width=1400, height=700)
+    print("✓ World heatmap saved as CleanedDataPlt/world_heatmap.png")
+except Exception as e:
+    print("⚠ PNG export skipped (requires Chrome/Chromium installation)")
+    print("  Interactive HTML version is available at CleanedDataPlt/world_heatmap.html")
+
+print("\n所有可视化完成！ All visualizations completed!")
