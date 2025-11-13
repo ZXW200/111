@@ -81,4 +81,91 @@ ax.set_title('Industry Trials by Region', fontsize=14, fontweight='bold')
 plt.savefig('CleanedDataPlt/industry_region.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("✓ Figure saved successfully!")
+
+# 创建世界地图热力图 Create world map heatmap
+print("\n生成世界地图热力图... Generating world map heatmap...")
+import geopandas as gpd
+import requests
+import json
+
+# 从 GitHub 下载世界地图 GeoJSON 数据
+# Download world map GeoJSON data from GitHub
+geojson_url = "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json"
+print(f"正在从 GitHub 获取地图数据... Fetching map data from GitHub...")
+
+try:
+    response = requests.get(geojson_url, verify=False, timeout=30)
+    geojson_data = response.json()
+
+    # 保存到临时文件 Save to temporary file
+    temp_geojson = 'temp_world_map.geojson'
+    with open(temp_geojson, 'w') as f:
+        json.dump(geojson_data, f)
+
+    # 使用 geopandas 读取 Read with geopandas
+    world = gpd.read_file(temp_geojson)
+    print(f"✓ 成功加载地图数据，包含 {len(world)} 个国家/地区")
+
+    # 读取国家统计数据 Read country statistics
+    country_stats = pd.read_csv("CleanedData/country_statistics.csv", encoding="utf-8-sig")
+
+    # 创建国家名称映射（处理不同的命名） Create country name mapping
+    name_mapping = {
+        'United States': 'United States of America',
+        'Tanzania': 'United Republic of Tanzania',
+        'Democratic Republic of the Congo': 'Democratic Republic of the Congo',
+        'Congo': 'Republic of the Congo',
+        'Côte d\'Ivoire': 'Ivory Coast',
+        'Czech Republic': 'Czech Republic',
+        'United Kingdom': 'United Kingdom',
+        'South Korea': 'South Korea',
+        'Laos': 'Lao PDR',
+    }
+
+    # 应用映射 Apply mapping
+    country_stats['mapped_name'] = country_stats['country'].apply(
+        lambda x: name_mapping.get(x, x)
+    )
+
+    # 合并数据 Merge data
+    world = world.merge(country_stats, left_on='name', right_on='mapped_name', how='left')
+
+    # 绘制热力图 Plot heatmap
+    fig, ax = plt.subplots(1, 1, figsize=(20, 10))
+
+    world.plot(
+        column='count',
+        ax=ax,
+        legend=True,
+        cmap='YlOrRd',
+        missing_kwds={'color': 'lightgrey', 'label': 'No data'},
+        edgecolor='black',
+        linewidth=0.5,
+        legend_kwds={'label': 'Number of NTD Clinical Trials', 'shrink': 0.5}
+    )
+
+    ax.set_title('World Map: Number of NTD Clinical Trials by Country',
+                 fontsize=16, fontweight='bold', pad=20)
+    ax.axis('off')
+
+    # 添加数据来源标注 Add data source annotation
+    ax.text(0.02, 0.02, 'Map data: johan/world.geo.json (GitHub)',
+            transform=ax.transAxes, fontsize=8, verticalalignment='bottom',
+            bbox=dict(boxstyle='round', facecolor='white', alpha=0.7))
+
+    # 保存图片 Save image
+    plt.savefig('CleanedDataPlt/world_heatmap.jpg', dpi=300, bbox_inches='tight')
+    plt.close()
+
+    # 清理临时文件 Clean up temporary file
+    import os
+    if os.path.exists(temp_geojson):
+        os.remove(temp_geojson)
+
+    print("✓ World heatmap saved as CleanedDataPlt/world_heatmap.jpg")
+    print("✓ Data source: https://github.com/johan/world.geo.json")
+
+except Exception as e:
+    print(f"✗ 生成热力图失败 Failed to generate heatmap: {e}")
+
 print("\n所有可视化完成！ All visualizations completed!")
