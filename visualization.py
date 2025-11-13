@@ -1,7 +1,10 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-import plotly.express as px
+import geopandas as gpd
+import pycountry
+from matplotlib.colors import LinearSegmentedColormap
+import numpy as np
 
 # 创建输出文件夹 Create output folder
 os.makedirs("CleanedDataPlt", exist_ok=True)
@@ -86,68 +89,89 @@ print("✓ Figure saved successfully!")
 print("\n生成世界地图热力图... Generating world map heatmap...")
 country_stats = pd.read_csv("CleanedData/country_statistics.csv", encoding="utf-8-sig")
 
-# 国家名称映射（ISO标准）Country name mapping (ISO standard)
-country_mapping = {
-    'United States': 'United States of America',
-    'United Kingdom': 'United Kingdom',
-    'DR Congo': 'Democratic Republic of the Congo',
-    'Côte d\'Ivoire': 'Ivory Coast',
-    'Timor-Leste': 'East Timor',
-    'Bolivia': 'Bolivia',
-    'Venezuela': 'Venezuela',
-    'Tanzania': 'United Republic of Tanzania',
-    'Laos': 'Lao PDR'
-}
+# 读取世界地图GeoJSON Load world map GeoJSON
+world = gpd.read_file('/tmp/geo_data/world-countries.json')
 
-# 应用映射 Apply mapping
-country_stats['country_mapped'] = country_stats['country'].replace(country_mapping)
+# 国家名称到ISO-3代码的转换 Convert country names to ISO-3 codes
+def get_iso3(country_name):
+    """Get ISO-3 country code from country name"""
+    # 手动映射特殊情况 Manual mapping for special cases
+    special_cases = {
+        'United States': 'USA',
+        'United Kingdom': 'GBR',
+        'DR Congo': 'COD',
+        'Côte d\'Ivoire': 'CIV',
+        'Timor-Leste': 'TLS',
+        'Bolivia': 'BOL',
+        'Venezuela': 'VEN',
+        'Tanzania': 'TZA',
+        'Laos': 'LAO',
+        'Vietnam': 'VNM',
+        'South Africa': 'ZAF'
+    }
 
-# 创建热力图 Create heatmap
-fig = px.choropleth(
-    country_stats,
-    locations='country_mapped',
-    locationmode='country names',
-    color='count',
-    hover_name='country',
-    hover_data={'country_mapped': False, 'count': True},
-    color_continuous_scale='YlOrRd',
-    labels={'count': 'Number of Experiments'},
-    title='World Map: Number of NTD Clinical Trials by Country'
-)
+    if country_name in special_cases:
+        return special_cases[country_name]
 
-fig.update_layout(
-    geo=dict(
-        showframe=False,
-        showcoastlines=True,
-        projection_type='natural earth'
-    ),
-    title={
-        'text': 'World Map: Number of NTD Clinical Trials by Country',
-        'x': 0.5,
-        'xanchor': 'center',
-        'font': {'size': 18, 'family': 'Arial', 'color': '#2c3e50'}
+    try:
+        return pycountry.countries.search_fuzzy(country_name)[0].alpha_3
+    except:
+        return None
+
+# 添加ISO-3代码 Add ISO-3 codes
+country_stats['iso_alpha'] = country_stats['country'].apply(get_iso3)
+
+# 合并数据 Merge data with world map
+world_merged = world.merge(country_stats, left_on='id', right_on='iso_alpha', how='left')
+
+# 创建图形 Create figure
+fig, ax = plt.subplots(1, 1, figsize=(20, 10))
+
+# 创建颜色映射 Create colormap
+colors = ['#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026']
+n_bins = 100
+cmap = LinearSegmentedColormap.from_list('YlOrRd', colors, N=n_bins)
+
+# 绘制热力图 Plot heatmap
+world_merged.plot(
+    column='count',
+    ax=ax,
+    legend=True,
+    cmap=cmap,
+    edgecolor='#333333',
+    linewidth=0.3,
+    missing_kwds={
+        'color': '#e8e8e8',
+        'edgecolor': '#999999',
+        'linewidth': 0.3
     },
-    width=1400,
-    height=700,
-    coloraxis_colorbar=dict(
-        title="Trial Count",
-        thicknessmode="pixels",
-        thickness=15,
-        lenmode="pixels",
-        len=300
-    )
+    legend_kwds={
+        'label': 'Number of Clinical Trials',
+        'orientation': 'horizontal',
+        'shrink': 0.6,
+        'aspect': 30,
+        'pad': 0.05
+    },
+    vmin=0,
+    vmax=country_stats['count'].max()
 )
 
-# 保存为HTML文件 Save as HTML file
-fig.write_html('CleanedDataPlt/world_heatmap.html')
-print("✓ World heatmap saved as CleanedDataPlt/world_heatmap.html")
+# 设置标题和样式 Set title and style
+ax.set_title('World Map: Number of NTD Clinical Trials by Country',
+             fontsize=22, fontweight='bold', pad=20, color='#2c3e50')
+ax.set_xlim([-180, 180])
+ax.set_ylim([-90, 90])
+ax.axis('off')
 
-# 尝试保存为静态图片（需要Chrome） Try to save as static image (requires Chrome)
-try:
-    fig.write_image('CleanedDataPlt/world_heatmap.png', width=1400, height=700)
-    print("✓ World heatmap saved as CleanedDataPlt/world_heatmap.png")
-except Exception as e:
-    print("⚠ PNG export skipped (requires Chrome/Chromium installation)")
-    print("  Interactive HTML version is available at CleanedDataPlt/world_heatmap.html")
+# 添加注释 Add note
+ax.text(0.02, 0.02, f'Total countries: {len(country_stats)} | Maximum trials: {country_stats["count"].max()} (Brazil)',
+        transform=ax.transAxes, fontsize=10, verticalalignment='bottom',
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
 
+# 保存为PNG Save as PNG
+plt.tight_layout()
+plt.savefig('CleanedDataPlt/world_heatmap.png', dpi=300, bbox_inches='tight', facecolor='white')
+plt.close()
+
+print("✓ World heatmap saved as CleanedDataPlt/world_heatmap.png")
 print("\n所有可视化完成！ All visualizations completed!")
