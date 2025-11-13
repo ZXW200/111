@@ -2,9 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import geopandas as gpd
-import pycountry
 from matplotlib.colors import LinearSegmentedColormap
-import numpy as np
 
 # 创建输出文件夹 Create output folder
 os.makedirs("CleanedDataPlt", exist_ok=True)
@@ -89,88 +87,46 @@ print("✓ Figure saved successfully!")
 print("\n生成世界地图热力图... Generating world map heatmap...")
 country_stats = pd.read_csv("CleanedData/country_statistics.csv", encoding="utf-8-sig")
 
-# 读取世界地图GeoJSON Load world map GeoJSON from local directory
+# 使用已有的国家代码映射 Use existing country code mapping
+COUNTRY_CODE = {
+    'BRA': 'Brazil','IND': 'India', 'ARG': 'Argentina','KEN': 'Kenya','TZA': 'Tanzania','ETH': 'Ethiopia','CIV': 'Côte d\'Ivoire',
+    'UGA': 'Uganda','ESP': 'Spain','USA': 'United States','BGD': 'Bangladesh','SDN': 'Sudan','CHN': 'China','BOL': 'Bolivia','COL': 'Colombia',
+    'SEN': 'Senegal','NLD': 'Netherlands','GBR': 'United Kingdom','LAO': 'Laos','CHE': 'Switzerland','PHL': 'Philippines','KHM': 'Cambodia','VNM': 'Vietnam',
+    'MEX': 'Mexico','NPL': 'Nepal','DEU': 'Germany','FRA': 'France','ZWE': 'Zimbabwe','BFA': 'Burkina Faso','MDG': 'Madagascar', 'IDN': 'Indonesia',
+    'ZMB': 'Zambia', 'EGY': 'Egypt', 'GHA': 'Ghana','GAB': 'Gabon', 'CHL': 'Chile', 'MOZ': 'Mozambique', 'THA': 'Thailand','CAN': 'Canada','ECU': 'Ecuador',
+    'TLS': 'Timor-Leste','FJI': 'Fiji','LKA': 'Sri Lanka','GTM': 'Guatemala','BEL': 'Belgium','GNB': 'Guinea-Bissau', 'MWI': 'Malawi','SLB': 'Solomon Islands','RWA': 'Rwanda',
+    'HTI': 'Haiti','NER': 'Niger','PER': 'Peru','VEN': 'Venezuela','LBR': 'Liberia','AUS': 'Australia','COD': 'DR Congo','HND': 'Honduras',
+    'CMR': 'Cameroon','ZAF': 'South Africa','MLI': 'Mali','SLV': 'El Salvador','MRT': 'Mauritania'
+}
+
+# 反转映射：国家名 -> ISO代码 Reverse mapping: country name -> ISO code
+name_to_code = {v: k for k, v in COUNTRY_CODE.items()}
+country_stats['iso_alpha'] = country_stats['country'].map(name_to_code)
+
+# 读取世界地图 Load world map
 world = gpd.read_file('CleanedData/geo_data/world-countries.json')
 
-# 国家名称到ISO-3代码的转换 Convert country names to ISO-3 codes
-def get_iso3(country_name):
-    """Get ISO-3 country code from country name"""
-    # 手动映射特殊情况 Manual mapping for special cases
-    special_cases = {
-        'United States': 'USA',
-        'United Kingdom': 'GBR',
-        'DR Congo': 'COD',
-        'Côte d\'Ivoire': 'CIV',
-        'Timor-Leste': 'TLS',
-        'Bolivia': 'BOL',
-        'Venezuela': 'VEN',
-        'Tanzania': 'TZA',
-        'Laos': 'LAO',
-        'Vietnam': 'VNM',
-        'South Africa': 'ZAF'
-    }
-
-    if country_name in special_cases:
-        return special_cases[country_name]
-
-    try:
-        return pycountry.countries.search_fuzzy(country_name)[0].alpha_3
-    except:
-        return None
-
-# 添加ISO-3代码 Add ISO-3 codes
-country_stats['iso_alpha'] = country_stats['country'].apply(get_iso3)
-
-# 合并数据 Merge data with world map
+# 合并数据 Merge data
 world_merged = world.merge(country_stats, left_on='id', right_on='iso_alpha', how='left')
 
 # 创建图形 Create figure
 fig, ax = plt.subplots(1, 1, figsize=(20, 10))
 
-# 创建颜色映射 Create colormap
-colors = ['#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026']
-n_bins = 100
-cmap = LinearSegmentedColormap.from_list('YlOrRd', colors, N=n_bins)
-
 # 绘制热力图 Plot heatmap
 world_merged.plot(
-    column='count',
-    ax=ax,
-    legend=True,
-    cmap=cmap,
-    edgecolor='#333333',
-    linewidth=0.3,
-    missing_kwds={
-        'color': '#e8e8e8',
-        'edgecolor': '#999999',
-        'linewidth': 0.3
-    },
-    legend_kwds={
-        'label': 'Number of Clinical Trials',
-        'orientation': 'horizontal',
-        'shrink': 0.6,
-        'aspect': 30,
-        'pad': 0.05
-    },
-    vmin=0,
-    vmax=country_stats['count'].max()
+    column='count', ax=ax, legend=True, cmap='YlOrRd',
+    edgecolor='#333333', linewidth=0.3,
+    missing_kwds={'color': '#e8e8e8'},
+    legend_kwds={'label': 'Number of Clinical Trials', 'shrink': 0.6}
 )
 
-# 设置标题和样式 Set title and style
 ax.set_title('World Map: Number of NTD Clinical Trials by Country',
-             fontsize=22, fontweight='bold', pad=20, color='#2c3e50')
-ax.set_xlim([-180, 180])
-ax.set_ylim([-90, 90])
+             fontsize=22, fontweight='bold', pad=20)
 ax.axis('off')
 
-# 添加注释 Add note
-ax.text(0.02, 0.02, f'Total countries: {len(country_stats)} | Maximum trials: {country_stats["count"].max()} (Brazil)',
-        transform=ax.transAxes, fontsize=10, verticalalignment='bottom',
-        bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
-
-# 保存为PNG Save as PNG
+# 保存PNG Save PNG
 plt.tight_layout()
-plt.savefig('CleanedDataPlt/world_heatmap.png', dpi=300, bbox_inches='tight', facecolor='white')
+plt.savefig('CleanedDataPlt/world_heatmap.png', dpi=300, bbox_inches='tight')
 plt.close()
 
 print("✓ World heatmap saved as CleanedDataPlt/world_heatmap.png")
