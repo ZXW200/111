@@ -1,0 +1,203 @@
+===============================================================================
+单人完成 - 最简视频脚本（2分30秒）
+===============================================================================
+
+重点：您一个人解释关键实现，不需要面面俱到
+
+===============================================================================
+⏱️ 0:00 - 0:20 | 项目介绍 (20秒)
+===============================================================================
+
+【打开终端，显示文件列表】
+
+台词：
+"Hello. This is Group 16's NTD clinical trials analysis.
+I analyzed 315 trials from WHO ICTRP covering 1999 to 2023.
+The implementation has five main components.
+Let me explain the key technical implementations."
+
+操作：ls -lh *.py
+
+===============================================================================
+⏱️ 0:20 - 1:10 | 数据清理实现 (50秒) - 最重要！
+===============================================================================
+
+【打开 CleanData.py】
+
+台词：
+"First, the data cleaning module.
+The key challenge was classifying sponsors automatically."
+
+【滚动到第26-46行，指着classify_categories函数】
+
+台词：
+"I implemented a keyword-based classification function.
+Lines 33 to 38 define keyword lists for government, industry,
+and non-profit sponsors.
+Line 40 uses Python's 'any' function - it checks if ANY keyword
+from our list appears in the sponsor name.
+If a match is found, we return the category.
+This automated classification for all 311 trials."
+
+【滚动到第94-101行，指着异常值处理】
+
+台词：
+"For data quality, lines 97 to 98 filter outliers.
+I use pandas boolean indexing to keep only sample sizes
+between 0 and 1 million. This removed 4 invalid records."
+
+【运行脚本，快速展示】
+操作：python3 CleanData.py
+
+台词（指着输出）：
+"The output shows 311 cleaned trials with sponsor classification."
+
+===============================================================================
+⏱️ 1:10 - 1:50 | 逻辑回归实现 (40秒)
+===============================================================================
+
+【打开 DataFit.py】
+
+台词：
+"For the main analysis, I implemented logistic regression
+to predict publication likelihood."
+
+【滚动到第24-29行，指着Pipeline】
+
+台词：
+"The key implementation is on line 24 - I use scikit-learn's Pipeline.
+Line 25 adds a ColumnTransformer with OneHotEncoder.
+This automatically converts categorical variables like 'phase'
+and 'sponsor category' into numerical dummy variables.
+Line 28 adds the LogisticRegression model.
+The Pipeline chains these steps, so encoding happens
+automatically before model training."
+
+【运行脚本】
+操作：python3 DataFit.py
+
+【打开生成的图片 coefficients_plot.png】
+
+台词：
+"This visualization shows the coefficients.
+Positive values increase publication probability."
+
+===============================================================================
+⏱️ 1:50 - 2:20 | 网络分析实现 (30秒)
+===============================================================================
+
+【打开 Network.py】
+
+台词：
+"For country collaboration analysis, I used NetworkX."
+
+【滚动到第36-44行，指着核心逻辑】
+
+台词：
+"The key algorithm is here. Lines 37 to 44 create a nested loop.
+For each trial with multiple countries, I iterate through
+all country pairs. Line 41 checks if an edge already exists.
+If yes, line 42 increments the weight - recording repeated
+collaborations. If no, line 44 creates a new edge.
+This builds a weighted collaboration network."
+
+【运行脚本，快速展示输出】
+操作：python3 Network.py
+
+===============================================================================
+⏱️ 2:20 - 2:30 | 总结 (10秒)
+===============================================================================
+
+【显示输出文件】
+
+台词：
+"The complete implementation produces 12 datasets and 3 visualizations.
+All code is documented and reproducible. Thank you."
+
+操作：
+ls CleanedData/
+ls CleanedDataPlt/
+
+【结束】
+
+===============================================================================
+⏱️ 总时长：2分30秒
+===============================================================================
+
+===============================================================================
+为什么这个脚本适合单人完成
+===============================================================================
+
+✅ 只讲3个核心实现（数据清理、逻辑回归、网络分析）
+✅ 聚焦关键代码行，不讲每个细节
+✅ 2分30秒，留30秒buffer避免超时
+✅ 不需要完美，只需要清楚展示实现逻辑
+
+===============================================================================
+录制准备（15分钟）
+===============================================================================
+
+1. 清理环境
+   cd /home/user/111
+   rm -rf CleanedData/ CleanedDataPlt/
+   clear
+
+2. 打开文件准备好
+   - 在文本编辑器打开 CleanData.py
+   - 在另一个标签打开 DataFit.py
+   - 在另一个标签打开 Network.py
+   - 准备好图片查看器
+
+3. 读脚本3遍
+   - 第1遍：熟悉内容
+   - 第2遍：大声读，练习发音
+   - 第3遍：边读边操作
+
+4. 终端字体调大到18pt
+
+5. 准备计时器（手机秒表）
+
+===============================================================================
+录制步骤（10分钟）
+===============================================================================
+
+1. 打开Zoom → 新会议 → 共享屏幕 → 录制
+2. 按脚本说话和操作
+3. 不要追求完美！说错了继续说
+4. 2分30秒完成，停止录制
+5. 检查视频
+
+如果不满意：删除，重录（只需要3分钟）
+
+===============================================================================
+省时技巧
+===============================================================================
+
+1. 不要讲ExtractDrug.py和visualization.py
+   - 时间不够
+   - 重点是数据清理和建模
+
+2. 代码运行时可以说话
+   - 不要等待沉默
+   - "While this runs, you can see..."
+
+3. 指着代码行号
+   - "Line 40 uses..."
+   - 让评审老师清楚看到你在讲哪里
+
+4. 不要解释太深
+   - ❌ "The any function iterates through the list using lazy evaluation..."
+   - ✅ "The any function checks if ANY keyword matches"
+
+===============================================================================
+如果实在紧张，最最简化版（1分30秒）
+===============================================================================
+
+0:00-0:10 | 介绍项目
+0:10-0:50 | 只讲数据清理实现（classify_categories + outlier removal）
+0:50-1:20 | 只讲逻辑回归实现（Pipeline + OneHotEncoder）
+1:20-1:30 | 展示输出，说"Thank you"
+
+这个版本只讲2个实现，但也足够展示您理解代码实现了。
+
+===============================================================================
