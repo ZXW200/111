@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>NTD Clinical Trials Analysis - Group 16</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f0f0;
+  overflow: hidden;
+}
+.slide-container {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+.slide {
+  width: 100%;
+  height: 100%;
+  display: none;
+  padding: 60px 80px;
+  background: white;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.slide.active { display: flex; flex-direction: column; }
+.slide h1 {
+  color: #2c3e50;
+  font-size: 48px;
+  margin-bottom: 30px;
+  border-bottom: 4px solid #3498db;
+  padding-bottom: 20px;
+}
+.slide h2 {
+  color: #3498db;
+  font-size: 36px;
+  margin: 20px 0;
+}
+.slide h3 {
+  color: #2c3e50;
+  font-size: 28px;
+  margin: 15px 0;
+}
+.slide p, .slide li {
+  font-size: 24px;
+  line-height: 1.6;
+  color: #34495e;
+  margin: 10px 0;
+}
+.slide ul {
+  margin-left: 40px;
+}
+.slide strong {
+  color: #e74c3c;
+  font-weight: 600;
+}
+.highlight {
+  background: #fff3cd;
+  padding: 20px;
+  border-left: 5px solid #ffc107;
+  margin: 20px 0;
+  font-size: 22px;
+}
+.stat-box {
+  background: #e8f4f8;
+  padding: 15px;
+  margin: 10px 0;
+  border-left: 4px solid #3498db;
+  font-size: 22px;
+}
+.warning { border-left-color: #e74c3c; background: #fde8e8; }
+.success { border-left-color: #27ae60; background: #e8f8e8; }
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 20px;
+}
+.img-container {
+  text-align: center;
+  margin: 20px 0;
+}
+.img-container img {
+  max-width: 90%;
+  max-height: 500px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 20px;
+}
+table th {
+  background: #3498db;
+  color: white;
+  padding: 12px;
+  text-align: left;
+}
+table td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+table tr:nth-child(even) { background: #f9f9f9; }
+.controls {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1000;
+}
+.controls button {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  margin: 0 5px;
+  font-size: 18px;
+  cursor: pointer;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.controls button:hover { background: #2980b9; }
+.slide-number {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  background: #2c3e50;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 18px;
+  z-index: 1000;
+}
+.title-slide {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+.title-slide h1 {
+  color: white;
+  font-size: 56px;
+  border-bottom: none;
+}
+.title-slide p {
+  color: white;
+  font-size: 28px;
+  margin: 20px 0;
+}
+</style>
+</head>
+<body>
+
+<div class="slide-container">
+
+<!-- Slide 1: Title -->
+<div class="slide active title-slide">
+  <h1>Investigating Trends in Neglected Tropical Disease (NTD) Clinical Studies</h1>
+  <p><strong>Group 16</strong> | Lancaster University</p>
+  <p>WHO ICTRP Data 1999-2023</p>
+  <br>
+  <p>Peizhe Jiang • Congyao Ren • Zixu Wang • Alaghwani Balsam</p>
+</div>
+
+<!-- Slide 2: Overview -->
+<div class="slide">
+  <h1>Project Overview</h1>
+  <h2>Dataset</h2>
+  <div class="stat-box">
+    <strong>Source:</strong> WHO International Clinical Trials Registry Platform (ICTRP)
+  </div>
+  <div class="stat-box">
+    <strong>Period:</strong> 1999-2023 (25 years)
+  </div>
+  <div class="stat-box">
+    <strong>Trials:</strong> 311 valid trials (315 raw, 4 outliers removed)
+  </div>
+  <div class="stat-box">
+    <strong>Countries:</strong> 62
+  </div>
+  <div class="stat-box">
+    <strong>Diseases:</strong> Chagas, Schistosomiasis, Endemic worms, Visceral leishmaniasis
+  </div>
+</div>
+
+<!-- Slide 3: Research Questions -->
+<div class="slide">
+  <h1>Research Questions</h1>
+  <ul style="font-size: 28px; line-height: 2;">
+    <li><strong>RQ 2.2.1:</strong> What factors are associated with results publication?</li>
+    <li><strong>RQ 2.2.2:</strong> Can network analysis reveal country partnerships?</li>
+    <li><strong>RQ 2.2.3:</strong> What proportion funded by pharmaceutical companies?</li>
+    <li><strong>RQ 2.2.4:</strong> Are children and pregnant women included in studies?</li>
+    <li><strong>RQ 2.2.5:</strong> Which drugs are studied for Chagas disease?</li>
+  </ul>
+</div>
+
+<!-- Slide 4: Publication Factors -->
+<div class="slide">
+  <h1>RQ 2.2.1: Publication Factors</h1>
+  <h2>FINDING: Severe Publication Gap</h2>
+  <div class="two-col">
+    <div>
+      <h3>Statistics:</h3>
+      <div class="stat-box warning">
+        Publication rate: <strong>4.2%</strong> (13/311)
+      </div>
+      <div class="stat-box warning">
+        Unpublished: <strong>95.8%</strong> (298/311)
+      </div>
+      <h3>Method:</h3>
+      <ul>
+        <li>Logistic Regression</li>
+        <li>Features: phase, study type, sponsor, income level</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Factors INCREASING Publication:</h3>
+      <ul>
+        <li>Phase II trials (+0.972) ✅</li>
+        <li>Industry sponsors (+0.702) ✅</li>
+        <li>Government sponsors (+0.690) ✅</li>
+        <li>High-income countries (+0.654) ✅</li>
+      </ul>
+    </div>
+  </div>
+  <div class="highlight">
+    <strong>Implication:</strong> Severe publication bias. Industry and high-income countries publish more.
+  </div>
+</div>
+
+<!-- Slide 5: Publication Predictors -->
+<div class="slide">
+  <h1>RQ 2.2.1: Publication Predictors (cont.)</h1>
+  <h3>Factors DECREASING Publication:</h3>
+  <ul style="font-size: 26px;">
+    <li>Low-income countries (-0.916) ❌</li>
+    <li>Non-profit sponsors (-0.755) ❌</li>
+    <li>"Other" sponsors (-0.643) ❌</li>
+    <li>Phase I trials (-0.621) ❌</li>
+    <li>Phase IV trials (-0.408) ❌</li>
+  </ul>
+  <div class="img-container">
+    <img src="CleanedDataPlt/coefficients_plot.png" alt="Logistic Regression Coefficients">
+  </div>
+</div>
+
+<!-- Slide 6: Pharma Funding -->
+<div class="slide">
+  <h1>RQ 2.2.3: Pharmaceutical Funding</h1>
+  <h2>FINDING: Low Pharma Investment</h2>
+  <div class="two-col">
+    <div>
+      <h3>Sponsor Distribution:</h3>
+      <div class="stat-box">Non-profit: <strong>66.9%</strong> (208 trials)</div>
+      <div class="stat-box">Other: 21.2% (66 trials)</div>
+      <div class="stat-box warning"><strong>Industry: 7.4%</strong> (23 trials) ⚠️</div>
+      <div class="stat-box">Government: 4.5% (14 trials)</div>
+      <br>
+      <div class="highlight">
+        <strong>Implication:</strong> NGOs carry the burden. Pharma severely underinvests.
+      </div>
+    </div>
+    <div class="img-container">
+      <img src="CleanedDataPlt/sponsor_distribution.png" alt="Sponsor Distribution">
+    </div>
+  </div>
+</div>
+
+<!-- Slide 7: Industry vs Burden -->
+<div class="slide">
+  <h1>RQ 2.2.3: Industry vs Disease Burden</h1>
+  <h2>Do pharma trials align with high-burden regions?</h2>
+  <p><strong>High-burden countries:</strong> India, Mexico, Tanzania, Bangladesh, Bolivia, Kenya, Egypt, Côte d'Ivoire</p>
+  <div class="two-col">
+    <div>
+      <h3>Industry Trials (23 total):</h3>
+      <div class="stat-box">High Burden: 19 trials (39.6%)</div>
+      <div class="stat-box warning">Normal regions: 29 trials (60.4%)</div>
+      <br>
+      <div class="highlight">
+        <strong>Implication:</strong> 60% NOT in high-burden regions!
+      </div>
+    </div>
+    <div class="img-container">
+      <img src="CleanedDataPlt/industry_region.png" alt="Industry Regional Distribution">
+    </div>
+  </div>
+</div>
+
+<!-- Slide 8: Country Collaborations -->
+<div class="slide">
+  <h1>RQ 2.2.2: Country Collaborations</h1>
+  <h2>FINDING: Strong International Partnerships</h2>
+  <div class="stat-box">Multi-country trials: <strong>43</strong></div>
+  <div class="stat-box">Countries in network: <strong>43</strong></div>
+  <div class="stat-box">Collaborative connections: <strong>163</strong></div>
+  <h3>Top 5 Hub Countries:</h3>
+  <table>
+    <tr>
+      <th>Rank</th><th>Country</th><th>Partners</th><th>Collaborations</th><th>Centrality</th>
+    </tr>
+    <tr><td>1</td><td>🇦🇷 Argentina</td><td>22</td><td>47</td><td>0.294</td></tr>
+    <tr><td>2</td><td>🇰🇭 Cambodia</td><td>18</td><td>22</td><td>0.275</td></tr>
+    <tr><td>3</td><td>🇧🇷 Brazil</td><td>18</td><td>32</td><td>0.159</td></tr>
+    <tr><td>4</td><td>🇻🇳 Vietnam</td><td>15</td><td>17</td><td>0.094</td></tr>
+    <tr><td>5</td><td>🇪🇹 Ethiopia</td><td>13</td><td>21</td><td>0.070</td></tr>
+  </table>
+</div>
+
+<!-- Slide 9: Special Populations -->
+<div class="slide">
+  <h1>RQ 2.2.4: Special Populations</h1>
+  <h2>FINDING: Limited Inclusion</h2>
+  <div class="two-col">
+    <div>
+      <h3>👶 Children:</h3>
+      <ul>
+        <li>No explicit tracking field</li>
+        <li>Data limitation: inferred from age ranges</li>
+        <li>Estimated ~50% may include children</li>
+      </ul>
+      <br>
+      <h3>🤰 Pregnant Women:</h3>
+      <ul>
+        <li>Explicitly included: <strong>12 trials (3.8%)</strong></li>
+        <li>Excluded/unclear: 96.2%</li>
+      </ul>
+    </div>
+    <div>
+      <div class="highlight">
+        <strong>Implication:</strong><br><br>
+        Vulnerable populations severely underrepresented.<br><br>
+        Evidence gaps for special groups.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 10: Drug Trends -->
+<div class="slide">
+  <h1>RQ 2.2.5: Drug Trends (Chagas)</h1>
+  <h2>FINDING: Benznidazole Dominates</h2>
+  <div class="stat-box">Total Chagas trials: <strong>88</strong></div>
+  <div class="stat-box">Method: Regex extraction from intervention text</div>
+  <h3>Top 5 Drugs:</h3>
+  <ol style="font-size: 26px; line-height: 2;">
+    <li><strong>Benznidazole</strong> - 21 trials (main treatment)</li>
+    <li>Placebo - 10 trials</li>
+    <li>E1224 - 6 trials (experimental)</li>
+    <li>Nifurtimox - 5 trials</li>
+    <li>E1224 Placebo - 4 trials</li>
+  </ol>
+  <div class="highlight">
+    <strong>Implication:</strong> Limited diversity in drug candidates.
+  </div>
+</div>
+
+<!-- Slide 11: Addressing Goals -->
+<div class="slide">
+  <h1>How Results Address Research Goals</h1>
+  <h2>Goal: "Clarify evolution of NTD trial activities and trends"</h2>
+  <div class="stat-box success">✅ <strong>Temporal Trends:</strong> 25-year coverage (1999-2023)</div>
+  <div class="stat-box success">✅ <strong>Geographic Distribution:</strong> 62 countries, hub countries identified</div>
+  <div class="stat-box success">✅ <strong>Funding Structure:</strong> Non-profit dominance (67%), Pharma minimal (7%)</div>
+  <div class="stat-box success">✅ <strong>Publication Patterns:</strong> Severe gap (4.2%), factors identified</div>
+  <div class="stat-box success">✅ <strong>Collaboration:</strong> Network analysis reveals partnerships</div>
+</div>
+
+<!-- Slide 12: Key Discoveries -->
+<div class="slide">
+  <h1>Key Discoveries Summary</h1>
+  <h2>3 Critical Findings:</h2>
+  <div class="stat-box warning" style="font-size: 26px; padding: 20px; margin: 15px 0;">
+    <strong>1. 🚨 PUBLICATION CRISIS</strong><br>
+    95.8% of trials don't publish results<br>
+    Evidence base severely limited
+  </div>
+  <div class="stat-box warning" style="font-size: 26px; padding: 20px; margin: 15px 0;">
+    <strong>2. 💰 FUNDING GAP</strong><br>
+    Pharma: 7.4%, Non-profits: 67%<br>
+    NGOs carry the burden
+  </div>
+  <div class="stat-box warning" style="font-size: 26px; padding: 20px; margin: 15px 0;">
+    <strong>3. 👥 REPRESENTATION GAP</strong><br>
+    Pregnant women: 3.8%<br>
+    Children: unclear/underrepresented
+  </div>
+</div>
+
+<!-- Slide 13: Data Limitations -->
+<div class="slide">
+  <h1>Data Limitations</h1>
+  <h3>Challenges We Faced:</h3>
+  <ul style="font-size: 24px; line-height: 1.8;">
+    <li><strong>Severe Publication Bias:</strong> Only 13 published trials, limited analysis power</li>
+    <li><strong>Data Completeness:</strong> 4 outliers removed, missing values, no explicit child field</li>
+    <li><strong>Classification Accuracy:</strong> Keyword-based sponsor classification may miss edge cases</li>
+    <li><strong>Temporal Imbalance:</strong> Trial distribution varies by year</li>
+  </ul>
+</div>
+
+<!-- Slide 14: Methodological Limitations -->
+<div class="slide">
+  <h1>Methodological Limitations</h1>
+  <div class="two-col">
+    <div>
+      <h3>1. Logistic Regression</h3>
+      <ul>
+        <li>⚠️ Small published sample (n=13)</li>
+        <li>⚠️ Severe class imbalance (4% vs 96%)</li>
+        <li>May affect reliability</li>
+      </ul>
+      <h3>2. Network Analysis</h3>
+      <ul>
+        <li>Country-level only</li>
+        <li>Doesn't capture institutions</li>
+      </ul>
+    </div>
+    <div>
+      <h3>3. Drug Extraction</h3>
+      <ul>
+        <li>Regex-based: may miss variations</li>
+        <li>Chagas only (not all diseases)</li>
+      </ul>
+      <h3>Mitigation:</h3>
+      <div class="stat-box success">
+        ✅ Stratified sampling<br>
+        ✅ Transparent documentation<br>
+        ✅ Robust cleaning pipeline
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 15: Recommendations -->
+<div class="slide">
+  <h1>Recommendations for Improvement</h1>
+  <div class="two-col">
+    <div>
+      <h3>Data Collection:</h3>
+      <ul>
+        <li>Standardize special population fields</li>
+        <li>Mandate result publication</li>
+        <li>Expand to post-2023 trials</li>
+      </ul>
+      <h3>Methodological:</h3>
+      <ul>
+        <li>Handle class imbalance (SMOTE)</li>
+        <li>Try ensemble methods</li>
+        <li>Institution-level network analysis</li>
+        <li>NLP for drug extraction</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Policy Implications:</h3>
+      <div class="stat-box" style="font-size: 22px;">
+        1. <strong>Mandate publication</strong> (address 96% gap)
+      </div>
+      <div class="stat-box" style="font-size: 22px;">
+        2. <strong>Incentivize pharma investment</strong>
+      </div>
+      <div class="stat-box" style="font-size: 22px;">
+        3. <strong>Target high-burden regions</strong>
+      </div>
+      <div class="stat-box" style="font-size: 22px;">
+        4. <strong>Design inclusive trials</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 16: Strengths -->
+<div class="slide">
+  <h1>Strengths of Our Analysis</h1>
+  <div class="stat-box success">
+    ✅ <strong>Comprehensive Cleaning:</strong> Robust outlier detection, automated classification, income level mapping
+  </div>
+  <div class="stat-box success">
+    ✅ <strong>Multi-Method Approach:</strong> Statistics + ML + Network + Text Mining
+  </div>
+  <div class="stat-box success">
+    ✅ <strong>Reproducible Pipeline:</strong> 5 modular scripts, complete documentation, clear execution order
+  </div>
+  <div class="stat-box success">
+    ✅ <strong>Transparent:</strong> All limitations acknowledged, CODE_DOCUMENTATION.txt provided
+  </div>
+  <div class="stat-box success">
+    ✅ <strong>Practical Insights:</strong> Actionable recommendations, policy implications
+  </div>
+</div>
+
+<!-- Slide 17: Takeaways -->
+<div class="slide">
+  <h1>Key Takeaways</h1>
+  <h2>What This Means:</h2>
+  <div class="highlight" style="font-size: 26px;">
+    NTD research needs <strong>structural reform</strong>:<br>
+    • Better incentives for publication<br>
+    • Increased pharma engagement<br>
+    • Improved data standards<br>
+    • Inclusive trial design
+  </div>
+  <h2>Our Contribution:</h2>
+  <ul style="font-size: 26px; line-height: 2;">
+    <li>Evidence for policy makers</li>
+    <li>Guidance for funders</li>
+    <li>Roadmap for researchers</li>
+  </ul>
+  <div class="stat-box" style="font-size: 28px; text-align: center; margin-top: 30px;">
+    <strong>311 trials analyzed → 5 questions answered → 3 critical gaps identified</strong>
+  </div>
+</div>
+
+<!-- Slide 18: Thank You -->
+<div class="slide title-slide">
+  <h1>Thank You</h1>
+  <h2 style="color: white;">Questions?</h2>
+  <br>
+  <p><strong>Project Materials:</strong></p>
+  <p>Code: 5 Python scripts</p>
+  <p>Documentation: CODE_DOCUMENTATION.txt</p>
+  <p>Data: 12 CSV files, 3 visualizations</p>
+  <br>
+  <p><strong>Group 16 - Lancaster University</strong></p>
+  <p>Peizhe Jiang • Congyao Ren • Zixu Wang • Alaghwani Balsam</p>
+</div>
+
+</div>
+
+<div class="slide-number">Slide <span id="current-slide">1</span> / <span id="total-slides">18</span></div>
+
+<div class="controls">
+  <button onclick="prevSlide()">◀ Previous</button>
+  <button onclick="nextSlide()">Next ▶</button>
+</div>
+
+<script>
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+document.getElementById('total-slides').textContent = totalSlides;
+
+function showSlide(n) {
+  slides[currentSlide].classList.remove('active');
+  currentSlide = (n + totalSlides) % totalSlides;
+  slides[currentSlide].classList.add('active');
+  document.getElementById('current-slide').textContent = currentSlide + 1;
+}
+
+function nextSlide() {
+  showSlide(currentSlide + 1);
+}
+
+function prevSlide() {
+  showSlide(currentSlide - 1);
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === ' ') {
+    nextSlide();
+  } else if (e.key === 'ArrowLeft') {
+    prevSlide();
+  }
+});
+
+// Initialize
+showSlide(0);
+</script>
+
+</body>
+</html>
