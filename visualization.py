@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-from CleanData import COUNTRY_CODE
+from Maping import COUNTRY_CODE, HIGH_BURDEN_COUNTRIES
 
 # 创建输出文件夹 Create output folder
 os.makedirs("CleanedDataPlt", exist_ok=True)
@@ -59,13 +59,9 @@ plt.close()
 
 industry_stats = pd.read_csv("CleanedData/country_Industry.csv", encoding="utf-8-sig")
 
-# 定义高负担国家列表 Define the list of high burden countries
-high_burden_countries = ['India', 'Mexico', 'Tanzania', 'Bangladesh', 'Bolivia',
-                       'Côte d\'Ivoire', 'Kenya', 'Egypt']
-
 # 添加负担分类列 Add burden classification column
 industry_stats['burden_level'] = industry_stats['country'].apply(
-    lambda x: 'High Burden' if x in high_burden_countries else 'Normal'
+    lambda x: 'High Burden' if x in HIGH_BURDEN_COUNTRIES else 'Normal'
 )
 
 # 保存更新后的文件 Save

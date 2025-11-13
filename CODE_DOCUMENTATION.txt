@@ -134,7 +134,7 @@ Method:
 
 Input:
   - CleanedData/cleaned_ictrp.csv
-  - CleanData.py (imports COUNTRY_CODE mapping)
+  - Maping.py (imports COUNTRY_CODE mapping)
 
 Outputs:
   - CleanedData/network_statistics.csv  : Network metrics by country
