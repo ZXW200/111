@@ -1,0 +1,22 @@
+﻿feature,coefficient
+cat__phase_PHASE II TRIAL,0.9722655770299373
+cat__sponsor_category_Industry,0.7024332129144543
+cat__sponsor_category_Government,0.6904019422103441
+cat__income_level_High,0.6536912824069762
+cat__income_level_Lower middle,0.4186711206317545
+cat__phase_PHASE III TRIAL,0.2919375468845632
+cat__study_type_INTERVENTIONAL,0.270943522017581
+cat__phase_NOT APPLICABLE,0.10928291183514385
+cat__study_type_OBSERVATIONAL,-0.012926430731455552
+cat__study_type_PREVENTION,-0.06096352741003711
+cat__income_level_Unknown,-0.07374213527671018
+cat__phase_PHASE I/II TRIAL,-0.08792457018801611
+cat__income_level_Upper middle,-0.08810509695630277
+cat__phase_Unknown,-0.0942855102208167
+cat__phase_PHASE II/III TRIAL,-0.1679492992489182
+cat__study_type_BA/BE,-0.20210559915654655
+cat__phase_PHASE IV TRIAL,-0.40770737367502907
+cat__phase_PHASE I TRIAL,-0.6206713176973225
+cat__sponsor_category_Other,-0.6429723603570137
+cat__sponsor_category_Non-profit,-0.7549148300482438
+cat__income_level_Low,-0.9155672060861768
