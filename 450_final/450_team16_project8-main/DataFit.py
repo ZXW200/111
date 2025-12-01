@@ -174,29 +174,33 @@ from sklearn.decomposition import PCA
 pca = PCA(n_components=2, random_state=42)
 X_pca = pca.fit_transform(X_encoded)
 
-fig, ax = plt.subplots(figsize=(10, 8))
-colors = ['#3498db', '#e74c3c', '#2ecc71']
-published_all = df['results_posted'].values
+fig, ax = plt.subplots(figsize=(12, 8))
+colors = ['#FF6B6B', '#4ECDC4', '#95E1D3']
 
 for i in range(3):
     mask = clusters == i
+    pub_rate = cluster_stats.loc[i, ('results_posted', 'mean')] * 100
 
-    # 已发表的用实心，未发表用空心 Published=filled, unpublished=hollow
-    ax.scatter(X_pca[mask & published_all, 0], X_pca[mask & published_all, 1],
-               c=colors[i], label=f'Cluster {i}', s=60, alpha=0.7, edgecolors='black', linewidths=0.5)
-    ax.scatter(X_pca[mask & ~published_all, 0], X_pca[mask & ~published_all, 1],
-               c=colors[i], s=60, alpha=0.3, edgecolors=colors[i], linewidths=1.5, facecolors='none')
+    # 绘制聚类点 Plot cluster points
+    ax.scatter(X_pca[mask, 0], X_pca[mask, 1],
+               c=colors[i], label=f'Cluster {i} ({pub_rate:.0f}% published)',
+               s=100, alpha=0.6, edgecolors='white', linewidths=1)
 
-# 画聚类中心 Plot cluster centers
+# 画聚类中心 Plot centers
 centers_pca = pca.transform(kmeans.cluster_centers_)
-ax.scatter(centers_pca[:, 0], centers_pca[:, 1], c='black', s=200, alpha=0.8,
-           marker='X', edgecolors='white', linewidths=2, label='Centers')
+ax.scatter(centers_pca[:, 0], centers_pca[:, 1],
+           c='#2C3E50', s=400, alpha=1, marker='*',
+           edgecolors='white', linewidths=2, label='Cluster Centers', zorder=5)
 
-ax.set_xlabel(f'PC1 ({pca.explained_variance_ratio_[0]*100:.1f}%)', fontweight='bold')
-ax.set_ylabel(f'PC2 ({pca.explained_variance_ratio_[1]*100:.1f}%)', fontweight='bold')
-ax.set_title('KMeans Clustering (PCA Projection)', fontweight='bold')
-ax.legend(loc='best')
-ax.grid(alpha=0.3)
+ax.set_xlabel(f'Principal Component 1 ({pca.explained_variance_ratio_[0]*100:.1f}%)',
+              fontsize=12, fontweight='bold')
+ax.set_ylabel(f'Principal Component 2 ({pca.explained_variance_ratio_[1]*100:.1f}%)',
+              fontsize=12, fontweight='bold')
+ax.set_title('Trial Clusters by Publication Characteristics (KMeans + PCA)',
+             fontsize=14, fontweight='bold', pad=15)
+ax.legend(loc='upper right', fontsize=10, framealpha=0.9)
+ax.grid(True, alpha=0.2, linestyle='--')
+ax.set_facecolor('#F8F9FA')
 
 plt.tight_layout()
 plt.savefig("CleanedDataPlt/kmeans_clusters.jpg", dpi=300, bbox_inches='tight')
