@@ -117,3 +117,55 @@ print(f"  → predit 1 (Results Posted): {cm[:, 1].sum()}")
 
 print("\n Classification Report:")
 print(classification_report(y_test, y_pred, target_names=['No Results (0)', 'Results Posted (1)'], zero_division=0))
+
+# ========== 聚类分析 Clustering Analysis ==========
+from sklearn.cluster import KMeans
+
+# 使用编码后的特征进行聚类 Use encoded features for clustering
+X_encoded = model.named_steps["encoder"].transform(X)
+kmeans = KMeans(n_clusters=3, random_state=42)
+clusters = kmeans.fit_predict(X_encoded)
+
+# 统计各簇的发表率 Calculate publication rate by cluster
+df['cluster'] = clusters
+cluster_stats = df.groupby('cluster').agg({
+    'results_posted': ['count', 'sum', 'mean']
+}).round(3)
+
+print("\n\n=== Cluster Analysis ===")
+print("Trials grouped by characteristics:\n")
+for i in range(3):
+    total = cluster_stats.loc[i, ('results_posted', 'count')]
+    published = cluster_stats.loc[i, ('results_posted', 'sum')]
+    rate = cluster_stats.loc[i, ('results_posted', 'mean')]
+    print(f"Cluster {i}: {int(total)} trials, {int(published)} published ({rate*100:.1f}%)")
+
+# 可视化 Visualization
+fig, ax = plt.subplots(figsize=(10, 6))
+cluster_ids = [0, 1, 2]
+counts = [cluster_stats.loc[i, ('results_posted', 'count')] for i in cluster_ids]
+rates = [cluster_stats.loc[i, ('results_posted', 'mean')] * 100 for i in cluster_ids]
+
+x = np.arange(len(cluster_ids))
+width = 0.35
+
+ax2 = ax.twinx()
+bars1 = ax.bar(x - width/2, counts, width, label='Total Trials', color='#3498db', alpha=0.7)
+bars2 = ax2.bar(x + width/2, rates, width, label='Publication Rate (%)', color='#e74c3c', alpha=0.7)
+
+ax.set_xlabel('Cluster', fontweight='bold')
+ax.set_ylabel('Number of Trials', fontweight='bold')
+ax2.set_ylabel('Publication Rate (%)', fontweight='bold')
+ax.set_xticks(x)
+ax.set_xticklabels([f'Cluster {i}' for i in cluster_ids])
+ax.set_title('Trial Clustering by Publication Patterns', fontweight='bold', pad=20)
+
+lines1, labels1 = ax.get_legend_handles_labels()
+lines2, labels2 = ax2.get_legend_handles_labels()
+ax.legend(lines1 + lines2, labels1 + labels2, loc='upper left')
+
+plt.tight_layout()
+plt.savefig("CleanedDataPlt/cluster_publication.jpg", dpi=300, bbox_inches='tight')
+plt.close()
+
+print("\nVisualization saved: CleanedDataPlt/cluster_publication.jpg")
