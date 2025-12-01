@@ -1,0 +1,10 @@
+﻿cluster,Trial_Count,Results_Posted_Rate,Most_Common_Phase,Most_Common_Study_Type,Most_Common_Sponsor,Most_Common_Income_Level
+0,105,0.0380952380952381,NOT APPLICABLE,INTERVENTIONAL,Non-profit,Upper middle
+1,67,0.029850746268656716,Unknown,OBSERVATIONAL,Non-profit,Upper middle
+4,44,0.09090909090909091,PHASE II TRIAL,INTERVENTIONAL,Non-profit,Upper middle
+2,34,0.08823529411764706,PHASE III TRIAL,INTERVENTIONAL,Non-profit,Lower middle
+7,26,0.0,PHASE IV TRIAL,INTERVENTIONAL,Non-profit,Upper middle
+3,21,0.0,PHASE I TRIAL,INTERVENTIONAL,Non-profit,High
+6,7,0.0,NOT APPLICABLE,OBSERVATIONAL,Non-profit,Unknown
+8,4,0.0,PHASE I/II TRIAL,INTERVENTIONAL,Other,Upper middle
+5,3,0.0,NOT APPLICABLE,BA/BE,Industry,Lower middle
