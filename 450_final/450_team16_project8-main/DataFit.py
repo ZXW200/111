@@ -176,15 +176,15 @@ X_pca = pca.fit_transform(X_encoded)
 
 fig, ax = plt.subplots(figsize=(10, 8))
 colors = ['#3498db', '#e74c3c', '#2ecc71']
+published_all = df['results_posted'].values
 
 for i in range(3):
     mask = clusters == i
-    published = df['results_posted'].values[mask]
 
     # 已发表的用实心，未发表用空心 Published=filled, unpublished=hollow
-    ax.scatter(X_pca[mask & published, 0], X_pca[mask & published, 1],
+    ax.scatter(X_pca[mask & published_all, 0], X_pca[mask & published_all, 1],
                c=colors[i], label=f'Cluster {i}', s=60, alpha=0.7, edgecolors='black', linewidths=0.5)
-    ax.scatter(X_pca[mask & ~published, 0], X_pca[mask & ~published, 1],
+    ax.scatter(X_pca[mask & ~published_all, 0], X_pca[mask & ~published_all, 1],
                c=colors[i], s=60, alpha=0.3, edgecolors=colors[i], linewidths=1.5, facecolors='none')
 
 # 画聚类中心 Plot cluster centers
