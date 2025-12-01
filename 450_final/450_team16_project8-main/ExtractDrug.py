@@ -136,7 +136,7 @@ for i, drug in enumerate(top_5_drugs):
     drug_data = trend_data[trend_data['drug'] == drug]
     ax1.plot(drug_data['year'], drug_data['count'],
              marker=markers[i], color=colors[i], linewidth=3,
-             markersize=10, label=drug, alpha=0.85)
+             markersize=10, alpha=0.85)
 
 # Configure left plot
 # 配置左图
@@ -144,7 +144,16 @@ ax1.set_xlabel('Year', fontsize=14, fontweight='bold')
 ax1.set_ylabel('Number of Trials', fontsize=14, fontweight='bold')
 ax1.set_title('Temporal Trends of Top 5 Drugs',
               fontsize=16, fontweight='bold', pad=15)
-ax1.legend(loc='best', fontsize=11, framealpha=0.95, edgecolor='black')
+
+# Create custom legend with color lines only (no markers)
+# 创建只显示颜色线条的自定义图例（不显示标记）
+from matplotlib.lines import Line2D
+legend_elements = [Line2D([0], [0], color=colors[i], linewidth=3,
+                         label=drug, alpha=0.85)
+                  for i, drug in enumerate(top_5_drugs)]
+ax1.legend(handles=legend_elements, loc='best', fontsize=11,
+          framealpha=0.95, edgecolor='black')
+
 ax1.grid(alpha=0.3, linestyle='--')
 ax1.tick_params(labelsize=11)
 
