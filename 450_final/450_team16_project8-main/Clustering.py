@@ -4,7 +4,7 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import os
-from Maping import COUNTRY_CODE
+import re
 
 os.makedirs("CleanedData", exist_ok=True)
 os.makedirs("CleanedDataPlt", exist_ok=True)
@@ -12,71 +12,94 @@ os.makedirs("CleanedDataPlt", exist_ok=True)
 # 读取数据 Load data
 df = pd.read_csv("CleanedData/cleaned_ictrp.csv", encoding="utf-8")
 
-# 按国家聚合统计 Aggregate by country
-country_data = []
-for codes in df['country_codes'].dropna():
-    for code in str(codes).upper().replace('|', ' ').split():
-        if code in COUNTRY_CODE:
-            country_data.append({
-                'country': COUNTRY_CODE[code],
-                'results_posted': df.loc[df['country_codes'].str.contains(code, na=False), 'results_posted'].iloc[0] if len(df[df['country_codes'].str.contains(code, na=False)]) > 0 else False,
-                'sponsor_category': df.loc[df['country_codes'].str.contains(code, na=False), 'sponsor_category'].iloc[0] if len(df[df['country_codes'].str.contains(code, na=False)]) > 0 else 'Unknown'
-            })
+# 提取儿童参与特征 Extract children inclusion
+def includes_children(age_min):
+    if pd.isna(age_min):
+        return 0
+    age_str = str(age_min).lower()
+    # 提取数字 Extract number
+    match = re.search(r'(\d+)', age_str)
+    if not match:
+        return 0
+    age_num = int(match.group(1))
+    # 判断是否包含儿童 (<18岁) Check if includes children (<18 years)
+    if 'month' in age_str or 'm' == age_str[-1]:
+        return 1  # 按月算，肯定是儿童 Months = children
+    elif 'year' in age_str or 'y' in age_str:
+        return 1 if age_num < 18 else 0
+    return 0
 
-country_df = pd.DataFrame(country_data)
+# 提取孕妇参与特征 Extract pregnant inclusion
+def includes_pregnant(preg):
+    if pd.isna(preg):
+        return 0
+    return 1 if str(preg).upper().strip() == 'INCLUDED' else 0
 
-# 计算每个国家的特征 Calculate features for each country
-country_features = country_df.groupby('country').agg(
-    total_trials=('country', 'size'),
-    publication_rate=('results_posted', 'mean'),
-    industry_pct=('sponsor_category', lambda x: (x == 'Industry').mean()),
-    government_pct=('sponsor_category', lambda x: (x == 'Government').mean())
-).reset_index()
+# 特征工程 Feature engineering
+df['children_included'] = df['inclusion_age_min'].apply(includes_children)
+df['pregnant_included'] = df['pregnant_participants'].apply(includes_pregnant)
 
-# 过滤试验数量>=5的国家 Filter countries with >=5 trials
-country_features = country_features[country_features['total_trials'] >= 5]
+# 编码疾病类型 Encode disease type
+disease_dummies = pd.get_dummies(df['standardised_condition'], prefix='disease')
 
-# 特征标准化 Standardize features
-features = ['total_trials', 'publication_rate', 'industry_pct', 'government_pct']
-X = country_features[features].values
+# 编码研究阶段 Encode phase
+phase_dummies = pd.get_dummies(df['phase'], prefix='phase')
+
+# 合并特征 Combine features
+features_df = pd.concat([
+    df[['children_included', 'pregnant_included']],
+    disease_dummies,
+    phase_dummies
+], axis=1)
+
+# 标准化 Standardize
 scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
+X_scaled = scaler.fit_transform(features_df)
 
-# K-means聚类 K-means clustering (k=3)
+# K-means聚类 (k=3) K-means clustering
 kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)
-country_features['cluster'] = kmeans.fit_predict(X_scaled)
+df['cluster'] = kmeans.fit_predict(X_scaled)
 
 # 保存结果 Save results
-country_features.to_csv("CleanedData/country_clusters.csv", index=False, encoding="utf-8-sig")
+result_df = df[['trial_id', 'standardised_condition', 'phase',
+                'children_included', 'pregnant_included', 'cluster']]
+result_df.to_csv("CleanedData/trial_clusters.csv", index=False, encoding="utf-8-sig")
+
+# 分析每个簇的特征 Analyze each cluster
+print("\n=== Trial Clustering Results (RQ 2.2.4) ===\n")
+for i in range(3):
+    cluster_df = df[df['cluster'] == i]
+    print(f"Cluster {i}: {len(cluster_df)} trials")
+    print(f"  Children included: {cluster_df['children_included'].mean()*100:.1f}%")
+    print(f"  Pregnant included: {cluster_df['pregnant_included'].mean()*100:.1f}%")
+    print(f"  Top diseases: {cluster_df['standardised_condition'].value_counts().head(2).to_dict()}")
+    print(f"  Top phases: {cluster_df['phase'].value_counts().head(2).to_dict()}\n")
 
 # 可视化 Visualization
-fig, ax = plt.subplots(figsize=(12, 8))
-colors = ['#3498db', '#e74c3c', '#2ecc71']
+fig, ax = plt.subplots(figsize=(10, 8))
+colors = ['#e74c3c', '#3498db', '#2ecc71']
 
 for i in range(3):
-    cluster_data = country_features[country_features['cluster'] == i]
-    ax.scatter(cluster_data['total_trials'],
-               cluster_data['publication_rate']*100,
-               c=colors[i], label=f'Cluster {i}', s=100, alpha=0.7, edgecolors='black')
+    cluster_df = df[df['cluster'] == i]
+    ax.scatter(cluster_df['children_included'] + np.random.normal(0, 0.05, len(cluster_df)),
+               cluster_df['pregnant_included'] + np.random.normal(0, 0.05, len(cluster_df)),
+               c=colors[i], label=f'Cluster {i} (n={len(cluster_df)})',
+               s=80, alpha=0.6, edgecolors='black', linewidth=0.5)
 
-ax.set_xlabel('Total Trials', fontsize=12, fontweight='bold')
-ax.set_ylabel('Publication Rate (%)', fontsize=12, fontweight='bold')
-ax.set_title('Country Clustering by Trial Characteristics', fontsize=14, fontweight='bold')
+ax.set_xlabel('Children Included', fontsize=12, fontweight='bold')
+ax.set_ylabel('Pregnant Women Included', fontsize=12, fontweight='bold')
+ax.set_title('Trial Clustering: Vulnerable Population Inclusion Patterns',
+             fontsize=13, fontweight='bold')
+ax.set_xticks([0, 1])
+ax.set_yticks([0, 1])
+ax.set_xticklabels(['No', 'Yes'])
+ax.set_yticklabels(['No', 'Yes'])
 ax.legend(fontsize=10)
 ax.grid(alpha=0.3)
 
 plt.tight_layout()
-plt.savefig("CleanedDataPlt/country_clustering.jpg", dpi=300, bbox_inches='tight')
+plt.savefig("CleanedDataPlt/trial_clustering.jpg", dpi=300, bbox_inches='tight')
 plt.close()
 
-# 输出聚类统计 Print cluster statistics
-print("\n=== Country Clustering Results ===\n")
-for i in range(3):
-    cluster_data = country_features[country_features['cluster'] == i]
-    print(f"Cluster {i}: {len(cluster_data)} countries")
-    print(f"  Avg trials: {cluster_data['total_trials'].mean():.1f}")
-    print(f"  Avg publication rate: {cluster_data['publication_rate'].mean()*100:.1f}%")
-    print(f"  Avg industry %: {cluster_data['industry_pct'].mean()*100:.1f}%\n")
-
-print(f"Results saved to CleanedData/country_clusters.csv")
-print(f"Visualization saved to CleanedDataPlt/country_clustering.jpg")
+print("Results saved to CleanedData/trial_clusters.csv")
+print("Visualization saved to CleanedDataPlt/trial_clustering.jpg")
